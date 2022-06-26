@@ -1,9 +1,23 @@
 import {List} from "../../list/list.entity";
+import {Product} from "../../product/product.entity";
 
 export interface ItemInListInterface {
     id: string;
-    itemId: string;
+    product: Product;
     count: number;
     weight: number;
     lists: List[];
 }
+
+export type AddItemtoListResponse = {
+    isSuccess: true,
+    id: string,
+} | {
+    isSuccess: false,
+}
+
+export type DeleteItemInListResponse = {
+    isSuccess: boolean,
+}
+export type EditItemInListResponse = DeleteItemInListResponse;
+export type GetItemInListResponse = ItemInListInterface;

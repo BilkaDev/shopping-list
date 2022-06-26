@@ -1,6 +1,16 @@
-import {BaseEntity, Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn} from "typeorm";
+import {
+    BaseEntity,
+    Column,
+    Entity,
+    JoinColumn,
+    JoinTable,
+    ManyToMany,
+    ManyToOne,
+    PrimaryGeneratedColumn
+} from "typeorm";
 import {ItemInListInterface} from "../interfaces/list/item-in-list";
 import {List} from "./list.entity";
+import {Product} from "../product/product.entity";
 
 @Entity()
 export class ItemInList extends BaseEntity implements ItemInListInterface {
@@ -8,11 +18,9 @@ export class ItemInList extends BaseEntity implements ItemInListInterface {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column({
-        length: 36,
-        nullable: false
-    })
-    itemId: string;
+    @ManyToOne(type => Product, entity => entity.items,{eager:true})
+    @JoinColumn()
+    product: Product;
 
     @Column({
         default: 0,

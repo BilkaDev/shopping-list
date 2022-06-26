@@ -1,7 +1,10 @@
+import {ItemInList} from "../../list/item-in-list.entity";
+
 export interface ProductInterface {
     id: string;
     name: string;
     category: productCategory;
+    items: ItemInList[];
 }
 
 export enum productCategory {
