@@ -1,15 +1,15 @@
 import {Injectable} from '@nestjs/common';
 import {Product} from "./product.entity";
-import {AddProductResponse, GetProductResponse, ProductListResponse} from "../interfaces/product/product";
+import {AddProductResponse, DeleteProductResponse, UpdateProductResponse} from "../interfaces/product/product";
 import {CreateProductDto} from "./dto/create-product";
 
 @Injectable()
 export class ProductService {
-    async getProducts(): Promise<ProductListResponse> {
+    async getProducts(): Promise<Product[]> {
         return await Product.find();
     }
 
-    async getProduct(id): Promise<GetProductResponse> {
+    async getProduct(id): Promise<Product> {
         return await Product.findOneOrFail({where: {id}});
     }
 
@@ -25,7 +25,6 @@ export class ProductService {
         ) {
             return {isSuccess: false};
         }
-        console.log(!productItem);
         const newProduct = new Product();
         newProduct.name = name;
         newProduct.category = category;
@@ -34,6 +33,36 @@ export class ProductService {
         return {
             id: newProduct.id,
             isSuccess: true
+        };
+    }
+
+    async deleteProduct(id: string): Promise<DeleteProductResponse> {
+        const item = await this.getProduct(id);
+        if (item) {
+            await item.remove();
+            return {
+                isSuccess: true,
+            };
+        } else return {
+            isSuccess: false,
+        };
+    }
+
+    async updateProduct(id: string, updateProduct): Promise<UpdateProductResponse> {
+        const {category, name} = updateProduct;
+        const isProductName = await this.hasProducts(name);
+        const product = await this.getProduct(id);
+        if ((!isProductName || name === product.name) && id === updateProduct.id){
+            const {affected} = await Product.update(id, {
+                name,
+                category,
+            });
+            if (affected) {
+                return {isSuccess: true};
+            }
         }
+       return {
+            isSuccess: false,
+        };
     }
 }

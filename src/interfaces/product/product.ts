@@ -1,8 +1,9 @@
 export interface ProductInterface {
-    id:string;
+    id: string;
     name: string;
-    category: productCategory
+    category: productCategory;
 }
+
 export enum productCategory {
     "róźne",
     "warzywa i owoce",
@@ -11,6 +12,7 @@ export enum productCategory {
     "Produkty mleczne",
     "Słodycze",
 }
+
 export type AddProductResponse = {
     isSuccess: true;
     id: string;
@@ -18,6 +20,11 @@ export type AddProductResponse = {
     isSuccess: false;
 }
 
-export type ProductListResponse = ProductInterface[]
-export type GetProductResponse = ProductInterface
+export type DeleteProductResponse = {
+    isSuccess: boolean;
+}
+
+export type ProductListResponse = ProductInterface[];
+export type GetProductResponse = ProductInterface;
 export type ProductCategory = productCategory;
+export type UpdateProductResponse = DeleteProductResponse;
