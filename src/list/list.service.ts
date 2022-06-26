@@ -34,14 +34,6 @@ export class ListService {
         return (await this.getLists()).some(list => list.listName.toLowerCase() === name.toLowerCase());
     }
 
-    async getItemInList(id: string) {
-        try {
-            return await ItemInList.findOne({where: {id}});
-        } catch (e) {
-            return;
-        }
-    }
-
     async createList(list: CreateListDto): Promise<CreateListResponse> {
         const newList = new List();
         const checkName = await this.hasList(list.listName);
@@ -86,16 +78,10 @@ export class ListService {
         };
     }
 
-    async addProductToList(item: CreateItemInListDto): Promise<AddItemtoListResponse> {
-        const product = await this.productService.getProduct(item.itemId);
+    async addItemToList(item: CreateItemInListDto): Promise<AddItemtoListResponse> {
         const list = await this.getList(item.listId);
-        const newItem = new ItemInList();
-        newItem.product = product;
-        newItem.count = item.count;
-        newItem.weight = item.weight;
-        await newItem.save();
-
-        if (product && list) {
+        const newItem = await this.createItem(item)
+        if (list) {
             list.items.push(newItem);
             await list.save();
             return {
@@ -107,7 +93,34 @@ export class ListService {
         };
     }
 
-    async updateItemList(id: string, newItem: UpdateItemsListDto): Promise<UpdateItemInListResponse> {
+    // service Items in list
+    async getListOfItems(): Promise<ItemInList[]>{
+        return await ItemInList.find()
+    }
+
+    async hasItemInList(name: string): Promise<boolean> {
+        return (await this.getListOfItems()).some(item => item.product.name.toLowerCase() === name.toLowerCase());
+    }
+
+    async getItemInList(id: string):Promise<ItemInList> {
+        try {
+            return await ItemInList.findOneOrFail({where: {id}});
+        } catch (e) {
+            return;
+        }
+    }
+
+    async createItem(item:CreateItemInListDto):Promise<ItemInList>{
+        const product = await this.productService.getProduct(item.itemId);
+        const newItem = new ItemInList();
+        newItem.product = product;
+        newItem.count = item.count;
+        newItem.weight = item.weight;
+        await newItem.save();
+        return newItem;
+    }
+
+    async updateItemInList(id: string, newItem: UpdateItemsListDto): Promise<UpdateItemInListResponse> {
         const item = await this.getItemInList(id);
         if (item) {
             item.count = newItem.count;

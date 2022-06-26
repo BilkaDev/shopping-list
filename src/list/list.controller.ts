@@ -42,7 +42,7 @@ export class ListController {
     addProductToList(
         @Body() newProduct: CreateItemInListDto,
     ): Promise<AddItemtoListResponse> {
-        return this.listService.addProductToList(newProduct);
+        return this.listService.addItemToList(newProduct);
     }
 
     @Patch('/:id')
@@ -58,7 +58,7 @@ export class ListController {
         @Param('id') id: string,
         @Body() items: UpdateItemsListDto,
     ): Promise<UpdateItemInListResponse> {
-        return this.listService.updateItemList(id, items);
+        return this.listService.updateItemInList(id, items);
     }
 
     @Delete('/:id')
