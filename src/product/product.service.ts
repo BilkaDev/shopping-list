@@ -10,7 +10,11 @@ export class ProductService {
     }
 
     async getProduct(id): Promise<Product> {
-        return await Product.findOneOrFail({where: {id}});
+        try {
+            return await Product.findOneOrFail({where: {id}});
+        }catch (e) {
+            return
+        }
     }
 
     async hasProducts(name: string): Promise<boolean> {
