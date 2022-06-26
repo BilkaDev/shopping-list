@@ -18,7 +18,8 @@ export class ItemInList extends BaseEntity implements ItemInListInterface {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @ManyToOne(type => Product, entity => entity.items,{eager:true})
+    @ManyToOne(type => Product, entity => entity.items,{eager:true,
+        onDelete: 'CASCADE'})
     @JoinColumn()
     product: Product;
 
