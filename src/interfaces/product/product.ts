@@ -11,6 +11,13 @@ export enum productCategory {
     "Produkty mleczne",
     "Słodycze",
 }
+export type AddProductResponse = {
+    isSuccess: true;
+    id: string;
+} | {
+    isSuccess: false;
+}
+
 export type ProductListResponse = ProductInterface[]
 export type GetProductResponse = ProductInterface
 export type ProductCategory = productCategory;
