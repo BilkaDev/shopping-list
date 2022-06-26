@@ -58,6 +58,9 @@ export class ListService {
     async deleteList(id: string): Promise<DeleteListResponse> {
         const list = await this.getList(id);
         if (list) {
+            for (const item of list.items) {
+                await item.remove();
+            }
             await list.remove();
             return {
                 isSuccess: true,
@@ -118,6 +121,28 @@ export class ListService {
         }
     }
 
+    async deleteItemInList(id: string) {
+        const item = await this.getItemInList(id)
+        if (item){
+            await item.remove();
+            return {isSuccess:true}
+        }else{
+            return {isSuccess:false}
+        }
+    }
 
+    async clearList(id: string) {
+        const list = await this.getList(id);
+        if (list){
+            for (const item of list.items) {
+                await item.remove();
+            }
+
+            await list.save()
+            return {isSuccess:true}
+        }else{
+            return {isSuccess:false}
+        }
+    }
 }
 
