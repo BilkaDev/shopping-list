@@ -1,4 +1,4 @@
-import {BaseEntity, Column, Entity, ManyToMany, PrimaryGeneratedColumn} from "typeorm";
+import {BaseEntity, Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn} from "typeorm";
 import {ItemInListInterface} from "../interfaces/list/item-in-list";
 import {List} from "./list.entity";
 
@@ -6,7 +6,6 @@ import {List} from "./list.entity";
 export class ItemInList extends BaseEntity implements ItemInListInterface {
 
     @PrimaryGeneratedColumn('uuid')
-    @ManyToMany(type => List, entity => entity.id)
     id: string;
 
     @Column({
@@ -24,4 +23,8 @@ export class ItemInList extends BaseEntity implements ItemInListInterface {
         default: 0,
     })
     weight: number;
+
+    @ManyToMany(type => List, entity => entity.items)
+    @JoinTable()
+    lists: List[];
 }

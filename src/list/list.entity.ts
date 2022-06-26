@@ -1,4 +1,4 @@
-import {BaseEntity, Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn} from "typeorm";
+import {BaseEntity, Column, Entity, ManyToMany, PrimaryGeneratedColumn} from "typeorm";
 import {ListInterface} from "../interfaces/list/list";
 import {ItemInList} from "./item-in-list.entity";
 
@@ -12,7 +12,6 @@ export class List extends BaseEntity implements ListInterface{
     })
     listName: string;
 
-    @ManyToMany(type => ItemInList, entity => entity.id)
-    @JoinTable()
-    productId: ItemInList;
+    @ManyToMany(type => ItemInList, entity => entity.lists)
+    items: ItemInList[];
 }
