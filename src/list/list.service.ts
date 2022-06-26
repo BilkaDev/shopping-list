@@ -3,9 +3,10 @@ import {List} from "./list.entity";
 import {CreateListDto} from "./dto/create-list";
 import {CreateListResponse, DeleteListResponse, EditListResponse} from "../interfaces/list/list";
 import {CreateItemInListDto} from "./dto/create-item-in-list";
-import {AddItemtoListResponse} from "../interfaces/list/item-in-list";
+import {AddItemtoListResponse, UpdateItemInListResponse} from "../interfaces/list/item-in-list";
 import {ProductService} from "../product/product.service";
 import {ItemInList} from "./item-in-list.entity";
+import {UpdateItemsListDto} from "./dto/update-items-list";
 
 @Injectable()
 export class ListService {
@@ -19,18 +20,26 @@ export class ListService {
     }
 
     async getList(id: string): Promise<List> {
-            try {
-                return await List.findOneOrFail({
-                    where: {id},
-                    relations: ['items']
-                })
-            }catch (e) {
-                return
-            }
+        try {
+            return await List.findOneOrFail({
+                where: {id},
+                relations: ['items']
+            });
+        } catch (e) {
+            return;
+        }
     }
 
     async hasList(name: string): Promise<boolean> {
         return (await this.getLists()).some(list => list.listName.toLowerCase() === name.toLowerCase());
+    }
+
+    async getItemInList(id: string) {
+        try {
+            return await ItemInList.findOne({where: {id}});
+        } catch (e) {
+            return;
+        }
     }
 
     async createList(list: CreateListDto): Promise<CreateListResponse> {
@@ -95,4 +104,20 @@ export class ListService {
         };
     }
 
+    async updateItemList(id: string, newItem: UpdateItemsListDto): Promise<UpdateItemInListResponse> {
+        const item = await this.getItemInList(id);
+        if (item) {
+            item.count = newItem.count;
+            item.weight = newItem.weight;
+            await item.save();
+            return {
+                isSuccess: true,
+            };
+        } else {
+            return {isSuccess: false};
+        }
+    }
+
+
 }
+

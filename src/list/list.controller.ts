@@ -9,7 +9,8 @@ import {
 } from "../interfaces/list/list";
 import {CreateListDto} from "./dto/create-list";
 import {CreateItemInListDto} from "./dto/create-item-in-list";
-import {AddItemtoListResponse} from "../interfaces/list/item-in-list";
+import {AddItemtoListResponse, UpdateItemInListResponse} from "../interfaces/list/item-in-list";
+import {UpdateItemsListDto} from "./dto/update-items-list";
 
 @Controller('list')
 export class ListController {
@@ -49,6 +50,14 @@ export class ListController {
         @Body() list: CreateListDto,
     ): Promise<EditListResponse> {
         return this.listService.editList(id, list);
+    }
+
+    @Patch('/product/:id')
+    updateItemInList(
+        @Param('id') id: string,
+        @Body() items: UpdateItemsListDto,
+    ): Promise<UpdateItemInListResponse> {
+        return this.listService.updateItemList(id, items);
     }
 
     @Delete('/:id')

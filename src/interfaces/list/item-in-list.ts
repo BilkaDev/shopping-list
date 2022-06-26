@@ -19,5 +19,5 @@ export type AddItemtoListResponse = {
 export type DeleteItemInListResponse = {
     isSuccess: boolean,
 }
-export type EditItemInListResponse = DeleteItemInListResponse;
+export type UpdateItemInListResponse = DeleteItemInListResponse;
 export type GetItemInListResponse = ItemInListInterface;
