@@ -3,8 +3,6 @@ import {
     Column,
     Entity,
     JoinColumn,
-    JoinTable,
-    ManyToMany,
     ManyToOne,
     PrimaryGeneratedColumn
 } from "typeorm";
@@ -33,7 +31,9 @@ export class ItemInList extends BaseEntity implements ItemInListInterface {
     })
     weight: number;
 
-    @ManyToMany(type => List, entity => entity.items)
-    @JoinTable()
-    lists: List[];
+    @ManyToOne(type => List, entity => entity.items,{
+        onDelete: 'CASCADE'
+    })
+    @JoinColumn()
+    lists: List;
 }

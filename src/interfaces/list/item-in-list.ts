@@ -6,7 +6,7 @@ export interface ItemInListInterface {
     product: Product;
     count: number;
     weight: number;
-    lists: List[];
+    lists: List;
 }
 
 export type AddItemtoListResponse = {
@@ -20,4 +20,4 @@ export type DeleteItemInListResponse = {
     isSuccess: boolean,
 }
 export type UpdateItemInListResponse = DeleteItemInListResponse;
-export type GetItemInListResponse = ItemInListInterface;
+export type GetListOfItemsResponse = ItemInListInterface[];

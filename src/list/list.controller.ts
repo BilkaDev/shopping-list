@@ -9,7 +9,7 @@ import {
 } from "../interfaces/list/list";
 import {CreateListDto} from "./dto/create-list";
 import {CreateItemInListDto} from "./dto/create-item-in-list";
-import {AddItemtoListResponse, UpdateItemInListResponse} from "../interfaces/list/item-in-list";
+import {AddItemtoListResponse, GetListOfItemsResponse, UpdateItemInListResponse} from "../interfaces/list/item-in-list";
 import {UpdateItemsListDto} from "./dto/update-items-list";
 
 @Controller('list')
@@ -22,6 +22,11 @@ export class ListController {
     @Get('/')
     getLists(): Promise<GetListsResponse> {
         return this.listService.getLists();
+    }
+
+    @Get('/item')
+    getListOfItems(): Promise<GetListOfItemsResponse> {
+        return this.listService.getListOfItems();
     }
 
     @Get('/:id')
@@ -38,7 +43,7 @@ export class ListController {
         return this.listService.createList(list);
     }
 
-    @Post('/product')
+    @Post('/item')
     addProductToList(
         @Body() newProduct: CreateItemInListDto,
     ): Promise<AddItemtoListResponse> {
@@ -53,7 +58,7 @@ export class ListController {
         return this.listService.editList(id, list);
     }
 
-    @Patch('/product/:id')
+    @Patch('/item/:id')
     updateItemInList(
         @Param('id') id: string,
         @Body() items: UpdateItemsListDto,
@@ -67,13 +72,15 @@ export class ListController {
     ): Promise<DeleteListResponse> {
         return this.listService.deleteList(id);
     }
-    @Delete('/product/:id')
+
+    @Delete('/item/:id')
     deleteItemInList(
         @Param('id') id: string,
     ): Promise<DeleteListResponse> {
         return this.listService.deleteItemInList(id);
     }
-    @Delete('/product/clear/:id')
+
+    @Delete('/item/clear/:id')
     clearList(
         @Param('id') id: string,
     ): Promise<DeleteListResponse> {

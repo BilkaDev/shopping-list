@@ -50,9 +50,9 @@ export class ListService {
     async deleteList(id: string): Promise<DeleteListResponse> {
         const list = await this.getList(id);
         if (list) {
-            for (const item of list.items) {
-                await item.remove();
-            }
+            // for (const item of list.items) {
+            //     await item.remove();
+            // }
             await list.remove();
             return {
                 isSuccess: true,
@@ -80,10 +80,12 @@ export class ListService {
 
     async addItemToList(item: CreateItemInListDto): Promise<AddItemtoListResponse> {
         const list = await this.getList(item.listId);
-        const newItem = await this.createItem(item)
-        if (list) {
+        const newItem = await this.createItem(item);
+        if (list && newItem.product) {
+            await newItem.save();
             list.items.push(newItem);
             await list.save();
+            console.log(list);
             return {
                 isSuccess: true,
                 id: newItem.id,
@@ -94,15 +96,15 @@ export class ListService {
     }
 
     // service Items in list
-    async getListOfItems(): Promise<ItemInList[]>{
-        return await ItemInList.find()
+    async getListOfItems(): Promise<ItemInList[]> {
+        return await ItemInList.find();
     }
 
     async hasItemInList(name: string): Promise<boolean> {
         return (await this.getListOfItems()).some(item => item.product.name.toLowerCase() === name.toLowerCase());
     }
 
-    async getItemInList(id: string):Promise<ItemInList> {
+    async getItemInList(id: string): Promise<ItemInList> {
         try {
             return await ItemInList.findOneOrFail({where: {id}});
         } catch (e) {
@@ -110,13 +112,12 @@ export class ListService {
         }
     }
 
-    async createItem(item:CreateItemInListDto):Promise<ItemInList>{
+    async createItem(item: CreateItemInListDto): Promise<ItemInList> {
         const product = await this.productService.getProduct(item.itemId);
         const newItem = new ItemInList();
         newItem.product = product;
         newItem.count = item.count;
         newItem.weight = item.weight;
-        await newItem.save();
         return newItem;
     }
 
@@ -135,26 +136,26 @@ export class ListService {
     }
 
     async deleteItemInList(id: string) {
-        const item = await this.getItemInList(id)
-        if (item){
+        const item = await this.getItemInList(id);
+        if (item) {
             await item.remove();
-            return {isSuccess:true}
-        }else{
-            return {isSuccess:false}
+            return {isSuccess: true};
+        } else {
+            return {isSuccess: false};
         }
     }
 
     async clearList(id: string) {
         const list = await this.getList(id);
-        if (list){
+        if (list) {
             for (const item of list.items) {
                 await item.remove();
             }
 
-            await list.save()
-            return {isSuccess:true}
-        }else{
-            return {isSuccess:false}
+            await list.save();
+            return {isSuccess: true};
+        } else {
+            return {isSuccess: false};
         }
     }
 }
