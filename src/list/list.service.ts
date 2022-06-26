@@ -85,7 +85,6 @@ export class ListService {
             await newItem.save();
             list.items.push(newItem);
             await list.save();
-            console.log(list);
             return {
                 isSuccess: true,
                 id: newItem.id,
@@ -98,10 +97,6 @@ export class ListService {
     // service Items in list
     async getListOfItems(): Promise<ItemInList[]> {
         return await ItemInList.find();
-    }
-
-    async hasItemInList(name: string): Promise<boolean> {
-        return (await this.getListOfItems()).some(item => item.product.name.toLowerCase() === name.toLowerCase());
     }
 
     async getItemInList(id: string): Promise<ItemInList> {
@@ -151,7 +146,6 @@ export class ListService {
             for (const item of list.items) {
                 await item.remove();
             }
-
             await list.save();
             return {isSuccess: true};
         } else {
