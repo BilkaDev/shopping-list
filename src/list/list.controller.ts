@@ -38,7 +38,7 @@ export class ListController {
         return this.listService.createList(list);
     }
 
-    @Post('/product')
+    @Post('/item')
     addProductToList(
         @Body() newProduct: CreateItemInListDto,
     ): Promise<AddItemtoListResponse> {
@@ -53,7 +53,7 @@ export class ListController {
         return this.listService.editList(id, list);
     }
 
-    @Patch('/product/:id')
+    @Patch('/item/:id')
     updateItemInList(
         @Param('id') id: string,
         @Body() items: UpdateItemsListDto,
@@ -67,13 +67,13 @@ export class ListController {
     ): Promise<DeleteListResponse> {
         return this.listService.deleteList(id);
     }
-    @Delete('/product/:id')
+    @Delete('/item/:id')
     deleteItemInList(
         @Param('id') id: string,
     ): Promise<DeleteListResponse> {
         return this.listService.deleteItemInList(id);
     }
-    @Delete('/product/clear/:id')
+    @Delete('/item/clear/:id')
     clearList(
         @Param('id') id: string,
     ): Promise<DeleteListResponse> {

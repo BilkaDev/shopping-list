@@ -81,7 +81,8 @@ export class ListService {
     async addItemToList(item: CreateItemInListDto): Promise<AddItemtoListResponse> {
         const list = await this.getList(item.listId);
         const newItem = await this.createItem(item)
-        if (list) {
+        if (list && newItem.product) {
+            await newItem.save();
             list.items.push(newItem);
             await list.save();
             return {
@@ -116,7 +117,6 @@ export class ListService {
         newItem.product = product;
         newItem.count = item.count;
         newItem.weight = item.weight;
-        await newItem.save();
         return newItem;
     }
 
