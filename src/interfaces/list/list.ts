@@ -1,9 +1,11 @@
+import { Recipe } from "src/recipe/recipe.entity";
 import {ItemInList} from "../../list/item-in-list.entity";
 
 export interface ListInterface {
     id: string;
     listName: string;
     items: ItemInList[];
+    recips: Recipe[];
 }
 
 export type CreateListResponse = {

@@ -23,6 +23,6 @@ export class List extends BaseEntity implements ListInterface {
     items: ItemInList[];
 
     @ManyToMany(type => Recipe, entity => entity.lists)
-    recipes: Recipe[]
+    recips: Recipe[]
 
 }

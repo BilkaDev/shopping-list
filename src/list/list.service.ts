@@ -113,6 +113,7 @@ export class ListService {
         newItem.product = product;
         newItem.count = item.count;
         newItem.weight = item.weight;
+        await newItem.save();
         return newItem;
     }
 

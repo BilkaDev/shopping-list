@@ -8,6 +8,7 @@ import {RecipeModule} from "../recipe/recipe.module";
   imports: [forwardRef(()=> ProductModule),
     forwardRef(()=> RecipeModule)],
   controllers: [ListController],
-  providers: [ListService]
+  providers: [ListService],
+  exports: [ListService]
 })
 export class ListModule {}
