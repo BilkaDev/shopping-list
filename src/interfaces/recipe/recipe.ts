@@ -23,6 +23,6 @@ export type EditNameRecipeResponse = {
 
 export type AddItemToRecipe = CreateRecipeResponse
 export type DeleteRecipeResponse = EditNameRecipeResponse
-export type GetRecipsResponse = Omit<RecipeInterface[], 'items' | 'description'>;
+export type GetRecipesResponse = Omit<RecipeInterface[], 'items' | 'description'>;
 
 

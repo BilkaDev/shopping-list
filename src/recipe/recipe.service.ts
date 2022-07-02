@@ -43,25 +43,23 @@ export class RecipeService {
     }
 
     private async hasRecipe(name: string) {
-        return (await this.getRecips()).some(recipe => recipe.name.toLowerCase() === name.toLowerCase());
+        return (await this.getRecipes()).some(recipe => recipe.name.toLowerCase() === name.toLowerCase());
     }
 
-    async getRecips() {
+    async getRecipes() {
         return await Recipe.find({
             relations: ['items']
         });
     }
 
-    async addItemToRecipt(item: AddItemToRecipeDto):Promise<AddItemToRecipe>{
+    async addItemToRecipe(item: AddItemToRecipeDto):Promise<AddItemToRecipe>{
         const recipe = await  this.getOneRecipe(item.recipeId);
-        const createItem = await this.listService.createItem({
-            itemId: item.itemId,
-            count: item.count,
-            weight: item.weight,
-        });
-        console.log(recipe);
-        console.log(createItem.id);
-        if (recipe && createItem){
+        if (recipe){
+            const createItem = await this.listService.createItem({
+                itemId: item.itemId,
+                count: item.count,
+                weight: item.weight,
+            });
             recipe.items.push(createItem);
             await recipe.save();
             return {

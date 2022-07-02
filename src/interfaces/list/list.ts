@@ -5,7 +5,7 @@ export interface ListInterface {
     id: string;
     listName: string;
     items: ItemInList[];
-    recips: Recipe[];
+    recipes: Recipe[];
 }
 
 export type CreateListResponse = {

@@ -21,6 +21,6 @@ export class Recipe extends BaseEntity implements RecipeInterface{
     @OneToMany(type => ItemInList, entity => entity.recipe)
     items: ItemInList[]
 
-    @ManyToMany(type => List, entity => entity.recips)
+    @ManyToMany(type => List, entity => entity.recipes)
     lists: List[]
 }
