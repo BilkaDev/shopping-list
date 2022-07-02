@@ -23,7 +23,7 @@ export class ListService {
         try {
             return await List.findOneOrFail({
                 where: {id},
-                relations: ['items']
+                relations: ['items','recipes','recipes.items']
             });
         } catch (e) {
             return;

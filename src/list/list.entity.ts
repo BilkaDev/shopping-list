@@ -1,7 +1,7 @@
 import {
     BaseEntity,
     Column,
-    Entity, ManyToMany,
+    Entity, JoinTable, ManyToMany,
     OneToMany,
     PrimaryGeneratedColumn
 } from "typeorm";
@@ -23,6 +23,7 @@ export class List extends BaseEntity implements ListInterface {
     items: ItemInList[];
 
     @ManyToMany(type => Recipe, entity => entity.lists)
-    recips: Recipe[]
+    @JoinTable()
+    recipes: Recipe[]
 
 }
