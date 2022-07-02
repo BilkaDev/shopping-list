@@ -6,7 +6,7 @@ export interface ItemInListInterface {
     product: Product;
     count: number;
     weight: number;
-    lists: List;
+    list: List;
 }
 
 export type AddItemtoListResponse = {

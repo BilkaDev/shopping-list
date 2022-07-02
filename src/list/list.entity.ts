@@ -1,12 +1,13 @@
 import {
     BaseEntity,
     Column,
-    Entity,
+    Entity, ManyToMany,
     OneToMany,
     PrimaryGeneratedColumn
 } from "typeorm";
 import {ListInterface} from "../interfaces/list/list";
 import {ItemInList} from "./item-in-list.entity";
+import {Recipe} from "../recipe/recipe.entity";
 
 @Entity()
 export class List extends BaseEntity implements ListInterface {
@@ -18,6 +19,10 @@ export class List extends BaseEntity implements ListInterface {
     })
     listName: string;
 
-    @OneToMany(type => ItemInList, entity => entity.lists)
+    @OneToMany(type => ItemInList, entity => entity.list)
     items: ItemInList[];
+
+    @ManyToMany(type => Recipe, entity => entity.lists)
+    recipes: Recipe[]
+
 }
