@@ -20,7 +20,7 @@ export class ProductService {
         try {
             return await Product.findOneOrFail({where: {id}});
         }catch (e) {
-            return
+            throw new Error(e)
         }
     }
 

@@ -83,8 +83,9 @@ export class ListService {
     async addItemToList(item: CreateItemInListDto): Promise<AddItemtoListResponse> {
         const list = await this.getList(item.listId);
         const newItem = await this.createItem(item);
-        if (list && newItem.product) {
-            await newItem.save();
+        console.log('==========================================');
+        console.log(newItem);
+        if (list && newItem) {
             list.items.push(newItem);
             await list.save();
             return {
@@ -110,13 +111,17 @@ export class ListService {
     }
 
     async createItem(item: CreateItemInListDto): Promise<ItemInList> {
-        const product = await this.productService.getProduct(item.itemId);
-        const newItem = new ItemInList();
-        newItem.product = product;
-        newItem.count = item.count;
-        newItem.weight = item.weight;
-        await newItem.save();
-        return newItem;
+        try {
+            const product = await this.productService.getProduct(item.itemId);
+            const newItem = new ItemInList();
+            newItem.product = product;
+            newItem.count = item.count;
+            newItem.weight = item.weight;
+            await newItem.save();
+            return newItem;
+        } catch (e) {
+            return
+        }
     }
 
     async updateItemInList(id: string, newItem: UpdateItemsListDto): Promise<UpdateItemInListResponse> {
