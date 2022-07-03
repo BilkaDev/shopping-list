@@ -15,12 +15,14 @@ export class ProductController {
     ) {
     }
 
-    @Get('/')
-    getProductsList(): Promise<ProductListResponse> {
-        return this.productService.getProducts();
+    @Get('/:userId')
+    getUserProductsList(
+        @Param('userId') userId: string
+    ): Promise<ProductListResponse> {
+        return this.productService.getUserProducts(userId);
     }
 
-    @Get('/:id')
+    @Get('/item/:id')
     getProduct(
         @Param('id') id: string,
     ): Promise<GetProductResponse> {
@@ -39,11 +41,12 @@ export class ProductController {
     ):Promise<DeleteProductResponse> {
         return this.productService.deleteProduct(id);
     }
-    @Patch('/:id')
+    @Patch('/:productId/:userId')
     updateProduct(
-        @Param('id') id: string,
+        @Param('productId') productId: string,
+        @Param('userId') userId: string,
         @Body() product: UpdateProductDto,
     ):Promise<UpdateProductResponse> {
-        return this.productService.updateProduct(id,product);
+        return this.productService.updateProduct(productId,userId,product);
     }
 }

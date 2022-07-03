@@ -4,4 +4,4 @@ export interface UserInterface {
 }
 
 
-export type RegisterUserResponse = UserInterface | {isSuccess:false, message:string};
+export type RegisterUserResponse = {id: string,email: string} | {isSuccess:false, message:string};
