@@ -1,17 +1,19 @@
 import {forwardRef, Inject, Injectable} from '@nestjs/common';
 import {List} from "./list.entity";
 import {CreateListDto} from "./dto/create-list";
-import {CreateListResponse, DeleteListResponse, EditListResponse} from "../interfaces/list/list";
+import {AddRecipeToListResponse, CreateListResponse, DeleteListResponse, EditListResponse} from "../interfaces/list/list";
 import {CreateItemInListDto} from "./dto/create-item-in-list";
 import {AddItemtoListResponse, UpdateItemInListResponse} from "../interfaces/list/item-in-list";
 import {ProductService} from "../product/product.service";
 import {ItemInList} from "./item-in-list.entity";
 import {UpdateItemsListDto} from "./dto/update-items-list";
+import {RecipeService} from "../recipe/recipe.service";
 
 @Injectable()
 export class ListService {
     constructor(
         @Inject(forwardRef(() => ProductService)) private productService: ProductService,
+        @Inject(forwardRef(() => RecipeService)) private recipeService: RecipeService,
     ) {
     }
 
@@ -23,7 +25,7 @@ export class ListService {
         try {
             return await List.findOneOrFail({
                 where: {id},
-                relations: ['items','recipes','recipes.items']
+                relations: ['items', 'recipes', 'recipes.items']
             });
         } catch (e) {
             return;
@@ -152,6 +154,28 @@ export class ListService {
         } else {
             return {isSuccess: false};
         }
+    }
+
+    async addRecipeToList(listId: string, recipeId: string): Promise<AddRecipeToListResponse> {
+        const list = await this.getList(listId);
+        const recipe = await this.recipeService.getOneRecipe(recipeId);
+        if (list && recipe) {
+            list.recipes.push(recipe)
+            await list.save()
+            return {isSuccess: true};
+        } else return {isSuccess: false};
+
+    }
+
+    async deleteRecipeFromList(listId: string, recipeId: string) {
+        const list = await this.getList(listId);
+        if (list){
+           list.recipes = list.recipes.filter(recipeInList => {
+                return recipeInList.id !== recipeId
+            } )
+            await list.save()
+            return {isSuccess: true};
+        } else return {isSuccess: false};
     }
 }
 

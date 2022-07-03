@@ -1,8 +1,9 @@
 import {Body, Controller, Delete, Get, Inject, Param, Patch, Post} from '@nestjs/common';
 import {ListService} from "./list.service";
 import {
+    AddRecipeToListResponse,
     CreateListResponse,
-    DeleteListResponse,
+    DeleteListResponse, DeleteRecipeFromListResponse,
     EditListResponse,
     GetListResponse,
     GetListsResponse
@@ -41,6 +42,21 @@ export class ListController {
         @Body() list: CreateListDto,
     ): Promise<CreateListResponse> {
         return this.listService.createList(list);
+    }
+    @Post('/add-recipe/:listId/:recipeId')
+    addRecipeToList(
+        @Param('listId') listId: string,
+        @Param('recipeId') recipeId: string,
+    ): Promise<DeleteRecipeFromListResponse> {
+        return this.listService.addRecipeToList(listId,recipeId);
+    }
+
+    @Delete('/delete-recipe/:listId/:recipeId')
+    deleteRecipeFromList(
+        @Param('listId') listId: string,
+        @Param('recipeId') recipeId: string,
+    ): Promise<AddRecipeToListResponse> {
+        return this.listService.deleteRecipeFromList(listId,recipeId);
     }
 
     @Post('/item')

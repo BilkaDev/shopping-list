@@ -18,6 +18,8 @@ export type CreateListResponse = {
 export type DeleteListResponse = {
     isSuccess: boolean,
 }
+export type AddRecipeToListResponse = DeleteListResponse;
+export type DeleteRecipeFromListResponse = DeleteListResponse;
 export type EditListResponse = DeleteListResponse;
 export type GetListsResponse = Omit<ListInterface[], 'items'>;
 export type GetListResponse = ListInterface;
