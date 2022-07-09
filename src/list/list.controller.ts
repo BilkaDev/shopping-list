@@ -20,23 +20,26 @@ export class ListController {
     ) {
     }
 
-    @Get('/')
-    getLists(): Promise<GetListsResponse> {
-        return this.listService.getLists();
+    @Get('/:userId')
+    getUserLists(
+        @Param('userId') userId: string
+    ): Promise<GetListsResponse> {
+        return this.listService.getUserLists(userId);
     }
 
-    @Get('/item')
-    getListOfItems(): Promise<GetListOfItemsResponse> {
-        return this.listService.getListOfItems();
+    @Get('/item/:userId')
+    getListOfItems(
+        @Param('userId') userId: string
+    ): Promise<GetListOfItemsResponse> {
+        return this.listService.getListOfItems(userId);
     }
 
-    @Get('/:id')
+    @Get('/user/:id')
     getList(
         @Param('id') id: string
     ): Promise<GetListResponse> {
         return this.listService.getList(id);
     }
-
     @Post('/')
     createList(
         @Body() list: CreateListDto,
@@ -59,7 +62,7 @@ export class ListController {
         return this.listService.deleteRecipeFromList(listId,recipeId);
     }
 
-    @Post('/item')
+    @Post('/item') //auth userId
     addProductToList(
         @Body() newProduct: CreateItemInListDto,
     ): Promise<AddItemtoListResponse> {
@@ -71,7 +74,7 @@ export class ListController {
         @Param('id') id: string,
         @Body() list: CreateListDto,
     ): Promise<EditListResponse> {
-        return this.listService.editList(id, list);
+        return this.listService.editList(id,list);
     }
 
     @Patch('/item/:id')

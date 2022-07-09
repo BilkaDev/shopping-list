@@ -12,9 +12,11 @@ export class RecipeController {
     ) {
     }
 
-    @Get('/')
-    getLists(): Promise<GetRecipesResponse> {
-        return this.recipeService.getRecipes();
+    @Get('/:userId')
+    getUserRecipes(
+        @Param('userId') userId: string,
+    ): Promise<GetRecipesResponse> {
+        return this.recipeService.getUserRecipes(userId);
     }
 
 

@@ -1,7 +1,17 @@
-import {BaseEntity, Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import {
+    BaseEntity,
+    Column,
+    Entity,
+    JoinColumn,
+    ManyToMany,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn
+} from "typeorm";
 import {ItemInList} from "../list/item-in-list.entity";
 import {List} from "../list/list.entity";
 import {RecipeInterface} from "../interfaces/recipe/recipe";
+import {User} from "../user/user.entity";
 
 @Entity()
 export class Recipe extends BaseEntity implements RecipeInterface{
@@ -23,4 +33,8 @@ export class Recipe extends BaseEntity implements RecipeInterface{
 
     @ManyToMany(type => List, entity => entity.recipes)
     lists: List[]
+
+    @ManyToOne(type => User,entity => entity.recipes)
+    @JoinColumn()
+    user: User;
 }

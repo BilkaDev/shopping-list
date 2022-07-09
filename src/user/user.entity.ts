@@ -1,7 +1,8 @@
 import {BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import {UserInterface} from "../interfaces/user/user";
 import {Product} from "../product/product.entity";
-import {ItemInList} from "../list/item-in-list.entity";
+import {List} from "../list/list.entity";
+import { Recipe } from "src/recipe/recipe.entity";
 
 @Entity()
 export class User extends BaseEntity implements UserInterface{
@@ -15,4 +16,10 @@ export class User extends BaseEntity implements UserInterface{
 
     @OneToMany(type => Product, entity => entity.user)
     products: Product[];
+
+    @OneToMany(type => List, entity => entity.user)
+    lists: List[];
+
+    @OneToMany(type => Recipe, entity => entity.user)
+    recipes: Recipe[];
 }

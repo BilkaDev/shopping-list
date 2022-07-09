@@ -8,17 +8,20 @@ import {ProductService} from "../product/product.service";
 import {ItemInList} from "./item-in-list.entity";
 import {UpdateItemsListDto} from "./dto/update-items-list";
 import {RecipeService} from "../recipe/recipe.service";
+import {UserService} from "../user/user.service";
 
 @Injectable()
 export class ListService {
     constructor(
         @Inject(forwardRef(() => ProductService)) private productService: ProductService,
         @Inject(forwardRef(() => RecipeService)) private recipeService: RecipeService,
+        @Inject(forwardRef(() => UserService)) private userService: UserService,
+
     ) {
     }
 
-    async getLists(): Promise<List[]> {
-        return await List.find();
+    async getUserLists(userId: string): Promise<List[]> {
+        return await List.find({where:{user: {id: userId}}});
     }
 
     async getList(id: string): Promise<List> {
@@ -32,15 +35,18 @@ export class ListService {
         }
     }
 
-    async hasList(name: string): Promise<boolean> {
-        return (await this.getLists()).some(list => list.listName.toLowerCase() === name.toLowerCase());
+    async hasList(userId,name: string): Promise<boolean> {
+        return (await this.getUserLists(userId)).some(list => list.listName.toLowerCase() === name.toLowerCase());
     }
 
     async createList(list: CreateListDto): Promise<CreateListResponse> {
         const newList = new List();
-        const checkName = await this.hasList(list.listName);
+        const user = await this.userService.getOneUser(list.userId)
+        if (!user) return {isSuccess:false}
+        const checkName = await this.hasList(user.id,list.listName);
         if (!checkName) {
             newList.listName = list.listName;
+            newList.user = user;
             await newList.save();
             return {
                 isSuccess: true,
@@ -66,7 +72,7 @@ export class ListService {
 
     async editList(id: string, list: CreateListDto): Promise<EditListResponse> {
         const {listName} = list;
-        const check = await this.hasList(listName);
+        const check = await this.hasList(list.userId,listName);
         if (!check) {
             const {affected} = await List.update(id, {
                 listName,
@@ -83,8 +89,6 @@ export class ListService {
     async addItemToList(item: CreateItemInListDto): Promise<AddItemtoListResponse> {
         const list = await this.getList(item.listId);
         const newItem = await this.createItem(item);
-        console.log('==========================================');
-        console.log(newItem);
         if (list && newItem) {
             list.items.push(newItem);
             await list.save();
@@ -98,8 +102,8 @@ export class ListService {
     }
 
     // service Items in list
-    async getListOfItems(): Promise<ItemInList[]> {
-        return await ItemInList.find();
+    async getListOfItems(userId): Promise<ItemInList[]> {
+        return await ItemInList.find({where:{product:{user:{id:userId}}}});
     }
 
     async getItemInList(id: string): Promise<ItemInList> {
