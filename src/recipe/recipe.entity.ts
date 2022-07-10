@@ -10,7 +10,7 @@ import {
 } from "typeorm";
 import {ItemInList} from "../list/item-in-list.entity";
 import {List} from "../list/list.entity";
-import {RecipeInterface} from "../interfaces/recipe/recipe";
+import {RecipeInterface} from "../interfaces";
 import {User} from "../user/user.entity";
 
 @Entity()

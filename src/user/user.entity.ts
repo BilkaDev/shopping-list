@@ -1,8 +1,8 @@
 import {BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm";
-import {UserInterface} from "../interfaces/user/user";
+import {UserInterface} from "../interfaces";
 import {Product} from "../product/product.entity";
 import {List} from "../list/list.entity";
-import { Recipe } from "src/recipe/recipe.entity";
+import {Recipe} from "../recipe/recipe.entity";
 
 @Entity()
 export class User extends BaseEntity implements UserInterface{

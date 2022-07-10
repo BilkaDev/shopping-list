@@ -1,7 +1,7 @@
-import {ItemInList} from "src/list/item-in-list.entity";
 import {BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
 import {User} from "../user/user.entity";
 import {ProductCategory, ProductInterface} from "../interfaces";
+import {ItemInList} from "../list/item-in-list.entity";
 
 @Entity()
 export class Product extends BaseEntity implements ProductInterface {

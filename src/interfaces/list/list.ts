@@ -1,4 +1,4 @@
-import { Recipe } from "src/recipe/recipe.entity";
+import { Recipe } from "../../recipe/recipe.entity";
 import {ItemInList} from "../../list/item-in-list.entity";
 
 export interface ListInterface {
