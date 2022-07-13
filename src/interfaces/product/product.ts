@@ -1,13 +1,15 @@
 import {ItemInList} from "../../list/item-in-list.entity";
+import {CreateProductDto} from "../../product/dto/create-product";
+import {UpdateProductDto} from "../../product/dto/update-product";
 
 export interface ProductInterface {
     id: string;
     name: string;
-    category: productCategory;
+    category: ProductCategory;
     items: ItemInList[];
 }
 
-export enum productCategory {
+export enum ProductCategory {
     "róźne",
     "warzywa i owoce",
     "mięso",
@@ -29,5 +31,8 @@ export type DeleteProductResponse = {
 
 export type ProductListResponse = ProductInterface[];
 export type GetProductResponse = ProductInterface;
-export type ProductCategory = productCategory;
 export type UpdateProductResponse = DeleteProductResponse;
+
+
+export type CreateProductRequest = CreateProductDto;
+export type UpdateProductRequest = UpdateProductDto;

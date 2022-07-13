@@ -32,7 +32,6 @@ export class ProductService {
         const {name, category,userId} = product;
         const user = await this.user.getOneUser(product.userId);
         const productItem = await this.hasProducts(userId,name);
-        console.log(user);
         if (
             productItem ||
             !user
@@ -67,7 +66,8 @@ export class ProductService {
         const {category, name} = updateProduct;
         const isProductName = await this.hasProducts(userId,name);
         const product = await this.getProduct(productId);
-        if ((!isProductName || name === product.name) && productId === updateProduct.id){
+
+        if ((name === product.name) || (!isProductName && product && name !== product.name)){
             const {affected} = await Product.update(productId, {
                 name,
                 category,
