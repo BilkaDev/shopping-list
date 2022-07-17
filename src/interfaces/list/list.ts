@@ -1,10 +1,11 @@
 import { Recipe } from "../../recipe/recipe.entity";
-import {ItemInList} from "../../list/item-in-list.entity";
+import {CreateListDto} from "../../list/dto/create-list";
+import {ItemInListInterface} from "./item-in-list";
 
 export interface ListInterface {
     id: string;
     listName: string;
-    items: ItemInList[];
+    items: ItemInListInterface[];
     recipes: Recipe[];
 }
 
@@ -23,3 +24,5 @@ export type DeleteRecipeFromListResponse = DeleteListResponse;
 export type EditListResponse = DeleteListResponse;
 export type GetListsResponse = Omit<ListInterface[], 'items'>;
 export type GetListResponse = ListInterface;
+
+export type CreateListRequest = CreateListDto;

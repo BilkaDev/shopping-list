@@ -1,4 +1,3 @@
-import {ItemInList} from "../../list/item-in-list.entity";
 import {CreateProductDto} from "../../product/dto/create-product";
 import {UpdateProductDto} from "../../product/dto/update-product";
 
@@ -6,7 +5,6 @@ export interface ProductInterface {
     id: string;
     name: string;
     category: ProductCategory;
-    items: ItemInList[];
 }
 
 export enum ProductCategory {

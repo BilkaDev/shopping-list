@@ -1,12 +1,7 @@
-import {ItemInList} from "../../list/item-in-list.entity";
-import {List} from "../../list/list.entity";
-
 export interface RecipeInterface {
     id: string;
     name: string;
     description: string;
-    items: ItemInList[];
-    lists: List[];
 }
 
 export type CreateRecipeResponse = {
@@ -23,6 +18,6 @@ export type EditNameRecipeResponse = {
 
 export type AddItemToRecipe = CreateRecipeResponse
 export type DeleteRecipeResponse = EditNameRecipeResponse
-export type GetRecipesResponse = Omit<RecipeInterface[], 'items' | 'description'>;
+export type GetRecipesResponse = Omit<RecipeInterface[], 'description'>;
 
 

@@ -1,12 +1,11 @@
-import {List} from "../../list/list.entity";
-import {Product} from "../../product/product.entity";
+import {CreateItemInListDto} from "../../list/dto/create-item-in-list";
+import {ProductInterface} from "../product";
 
 export interface ItemInListInterface {
     id: string;
-    product: Product;
+    product: ProductInterface;
     count: number;
     weight: number;
-    list: List;
 }
 
 export type AddItemtoListResponse = {
@@ -21,3 +20,5 @@ export type DeleteItemInListResponse = {
 }
 export type UpdateItemInListResponse = DeleteItemInListResponse;
 export type GetListOfItemsResponse = ItemInListInterface[];
+export type GetItemInList = ItemInListInterface
+export type CreateItemInListRequest = CreateItemInListDto;
