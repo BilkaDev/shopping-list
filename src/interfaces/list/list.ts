@@ -1,12 +1,13 @@
 import { Recipe } from "../../recipe/recipe.entity";
 import {CreateListDto} from "../../list/dto/create-list";
 import {ItemInListInterface} from "./item-in-list";
+import {RecipeInterface} from "../recipe";
 
 export interface ListInterface {
     id: string;
     listName: string;
     items: ItemInListInterface[];
-    recipes: Recipe[];
+    recipes: RecipeInterface[];
 }
 
 export type CreateListResponse = {
