@@ -1,9 +1,17 @@
-import {BaseEntity, Column, Entity, ManyToMany, PrimaryGeneratedColumn} from "typeorm";
+import {
+    BaseEntity,
+    Column,
+    Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn
+} from "typeorm";
 import {ListInterface} from "../interfaces/list/list";
 import {ItemInList} from "./item-in-list.entity";
+import {Recipe} from "../recipe/recipe.entity";
+import {User} from "../user/user.entity";
 
 @Entity()
-export class List extends BaseEntity implements ListInterface{
+export class List extends BaseEntity implements ListInterface {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
@@ -12,6 +20,15 @@ export class List extends BaseEntity implements ListInterface{
     })
     listName: string;
 
-    @ManyToMany(type => ItemInList, entity => entity.lists)
+    @OneToMany(type => ItemInList, entity => entity.list)
     items: ItemInList[];
+
+    @ManyToMany(type => Recipe, entity => entity.lists)
+    @JoinTable()
+    recipes: Recipe[]
+
+    @ManyToOne(type => User,entity => entity.lists)
+    @JoinColumn()
+    user: User;
+
 }

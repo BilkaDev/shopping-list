@@ -1,5 +1,13 @@
+import {IsNotEmpty, IsNumber, IsString, MaxLength, MinLength} from "class-validator";
+
 export class UpdateProductDto {
-    id: string;
+    @MinLength(2)
+    @MaxLength(100)
+    @IsString()
+    @IsNotEmpty()
     name: string;
+
+    @IsNumber()
+    @IsNotEmpty()
     category: number;
 }

@@ -3,14 +3,13 @@ import {
     Column,
     Entity,
     JoinColumn,
-    JoinTable,
-    ManyToMany,
     ManyToOne,
     PrimaryGeneratedColumn
 } from "typeorm";
 import {ItemInListInterface} from "../interfaces/list/item-in-list";
 import {List} from "./list.entity";
 import {Product} from "../product/product.entity";
+import {Recipe} from "../recipe/recipe.entity";
 
 @Entity()
 export class ItemInList extends BaseEntity implements ItemInListInterface {
@@ -33,7 +32,17 @@ export class ItemInList extends BaseEntity implements ItemInListInterface {
     })
     weight: number;
 
-    @ManyToMany(type => List, entity => entity.items)
-    @JoinTable()
-    lists: List[];
+    @ManyToOne(type => List, entity => entity.items,{
+        onDelete: 'CASCADE'
+    })
+    @JoinColumn()
+    list: List;
+
+
+    @ManyToOne(type => Recipe, entity => entity.items,{
+        onDelete: 'CASCADE',
+    })
+    @JoinColumn()
+    recipe: Recipe;
+
 }

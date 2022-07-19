@@ -1,6 +1,7 @@
-import {ItemInList} from "src/list/item-in-list.entity";
-import {BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn} from "typeorm";
-import {ProductCategory, ProductInterface} from "../interfaces/product/product";
+import {BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn} from "typeorm";
+import {User} from "../user/user.entity";
+import {ProductCategory, ProductInterface} from "../interfaces";
+import {ItemInList} from "../list/item-in-list.entity";
 
 @Entity()
 export class Product extends BaseEntity implements ProductInterface {
@@ -20,4 +21,8 @@ export class Product extends BaseEntity implements ProductInterface {
 
     @OneToMany(type => ItemInList, entity => entity.product)
     items: ItemInList[];
+
+    @ManyToOne(type => User,entity => entity.products)
+    @JoinColumn()
+    user: User;
 }
