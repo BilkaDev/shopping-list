@@ -76,14 +76,10 @@ export class RecipeService {
     }
 
     async getOneRecipe(id: string) {
-        try {
-            return await Recipe.findOneOrFail({
-                where: {id},
-                relations: ['items']
-            });
-        } catch (e) {
-            return false;
-        }
+        return await Recipe.findOne({
+            where: {id},
+            relations: ['items']
+        });
     }
 
     async editNamedRecipe(id: string, newName: string): Promise<EditNameRecipeResponse> {

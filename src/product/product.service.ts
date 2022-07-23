@@ -17,11 +17,7 @@ export class ProductService {
     }
 
     async getProduct(id): Promise<Product> {
-        try {
-            return await Product.findOneOrFail({where: {id}});
-        }catch (e) {
-            throw new Error(e)
-        }
+            return await Product.findOne({where: {id}});
     }
 
     async hasProducts(userId:string ,name: string): Promise<boolean> {
