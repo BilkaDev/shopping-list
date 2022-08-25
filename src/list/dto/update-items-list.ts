@@ -1,5 +1,4 @@
-
 export class UpdateItemsListDto {
-    count: number;
-    weight: number;
+  count: number;
+  weight: number;
 }

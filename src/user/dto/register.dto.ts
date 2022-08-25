@@ -1,3 +1,3 @@
 export class RegisterDto {
-    email: string;
+  email: string;
 }
