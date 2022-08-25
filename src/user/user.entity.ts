@@ -22,4 +22,16 @@ export class User extends BaseEntity implements UserInterface {
 
   @OneToMany(type => Recipe, entity => entity.user)
   recipes: Recipe[];
+
+  @Column()
+  pwdHash: string;
+
+  @Column({
+    nullable: true,
+    default: null,
+  })
+  currentTokenId: string | null;
+
+  @Column()
+  salz: string;
 }
