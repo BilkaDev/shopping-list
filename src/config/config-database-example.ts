@@ -1,4 +1,4 @@
-import { DataSource } from "typeorm";
+import { DataSource, DataSourceOptions } from "typeorm";
 
 export const dataSource = new DataSource({
   type: "mysql",
@@ -11,4 +11,8 @@ export const dataSource = new DataSource({
   logging: true,
   bigNumberStrings: false,
   synchronize: true,
-});
+  migrations: ["dist/migrations/*.js"],
+  cli: {
+    migrationsDir: "migrations",
+  },
+} as DataSourceOptions);
