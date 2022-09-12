@@ -1,6 +1,6 @@
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { Product } from "./product.entity";
-import { AddProductResponse, DeleteProductResponse, UpdateProductResponse } from "../interfaces";
+import { AddProductResponse, DeleteProductResponse, ProductListResponse, UpdateProductResponse } from "../interfaces";
 import { CreateProductDto } from "./dto/create-product";
 import { UserService } from "../user/user.service";
 
@@ -8,12 +8,16 @@ import { UserService } from "../user/user.service";
 export class ProductService {
   constructor(@Inject(forwardRef(() => UserService)) private user: UserService) {}
 
-  async getUserProducts(userId: string): Promise<Product[]> {
-    return await Product.find({
+  async getUserProducts(userId: string): Promise<ProductListResponse> {
+    const products = await Product.find({
       where: {
         user: { id: userId },
       },
     });
+    return {
+      isSuccess: true,
+      products,
+    };
   }
 
   async getProduct(id): Promise<Product> {
@@ -21,7 +25,7 @@ export class ProductService {
   }
 
   async hasProducts(userId: string, name: string): Promise<boolean> {
-    return (await this.getUserProducts(userId)).some(product => product.name.toLowerCase() === name.toLowerCase());
+    return (await this.getUserProducts(userId)).products.some(product => product.name.toLowerCase() === name.toLowerCase());
   }
 
   async addProduct(product: CreateProductDto): Promise<AddProductResponse> {
