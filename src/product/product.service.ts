@@ -1,6 +1,6 @@
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { Product } from "./product.entity";
-import { AddProductResponse, DeleteProductResponse, UpdateProductResponse } from "../interfaces/product/product";
+import { AddProductResponse, DeleteProductResponse, UpdateProductResponse } from "../interfaces";
 import { CreateProductDto } from "./dto/create-product";
 import { UserService } from "../user/user.service";
 

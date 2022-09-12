@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Inject, Param, Patch, Post } from "@nestjs/common";
 import { ProductService } from "./product.service";
-import { AddProductResponse, DeleteProductResponse, GetProductResponse, ProductListResponse, UpdateProductResponse } from "../interfaces/product/product";
+import { AddProductResponse, DeleteProductResponse, GetProductResponse, ProductListResponse, UpdateProductResponse } from "../interfaces";
 import { CreateProductDto } from "./dto/create-product";
 import { UpdateProductDto } from "./dto/update-product";
 
@@ -22,10 +22,12 @@ export class ProductController {
   addProduct(@Body() product: CreateProductDto): Promise<AddProductResponse> {
     return this.productService.addProduct(product);
   }
+
   @Delete("/:id")
   removeProduct(@Param("id") id: string): Promise<DeleteProductResponse> {
     return this.productService.deleteProduct(id);
   }
+
   @Patch("/:productId/:userId")
   updateProduct(@Param("productId") productId: string, @Param("userId") userId: string, @Body() product: UpdateProductDto): Promise<UpdateProductResponse> {
     return this.productService.updateProduct(productId, userId, product);
