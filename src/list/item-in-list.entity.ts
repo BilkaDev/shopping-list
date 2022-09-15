@@ -1,5 +1,5 @@
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { ItemInListInterface } from "../interfaces/list/item-in-list";
+import { ItemInListInterface } from "../interfaces";
 import { List } from "./list.entity";
 import { Product } from "../product/product.entity";
 import { Recipe } from "../recipe/recipe.entity";
@@ -22,6 +22,11 @@ export class ItemInList extends BaseEntity implements ItemInListInterface {
     default: 0,
   })
   weight: number;
+
+  @Column({
+    default: false,
+  })
+  itemInBasket: boolean;
 
   @ManyToOne(type => List, entity => entity.items, {
     onDelete: "CASCADE",

@@ -1,9 +1,9 @@
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { List } from "./list.entity";
 import { CreateListDto } from "./dto/create-list";
-import { AddRecipeToListResponse, CreateListResponse, DeleteListResponse, EditListResponse } from "../interfaces/list/list";
+import { AddRecipeToListResponse, CreateListResponse, DeleteListResponse, EditListResponse } from "../interfaces";
 import { CreateItemInListDto } from "./dto/create-item-in-list";
-import { AddItemtoListResponse, UpdateItemInListResponse } from "../interfaces/list/item-in-list";
+import { AddItemtoListResponse, UpdateItemInListResponse } from "../interfaces";
 import { ProductService } from "../product/product.service";
 import { ItemInList } from "./item-in-list.entity";
 import { UpdateItemsListDto } from "./dto/update-items-list";
@@ -176,5 +176,17 @@ export class ListService {
       await list.save();
       return { isSuccess: true };
     } else return { isSuccess: false };
+  }
+
+  addToBasket(id: string) {
+    return Promise.resolve(undefined);
+  }
+
+  removeFromBasket(id: string) {
+    return Promise.resolve(undefined);
+  }
+
+  clearBasket(id: string) {
+    return Promise.resolve(undefined);
   }
 }

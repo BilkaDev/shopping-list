@@ -6,6 +6,7 @@ export interface ItemInListInterface {
   product: ProductInterface;
   count: number;
   weight: number;
+  itemInBasket: boolean;
 }
 
 export type AddItemtoListResponse =
@@ -24,3 +25,7 @@ export type UpdateItemInListResponse = DeleteItemInListResponse;
 export type GetListOfItemsResponse = ItemInListInterface[];
 export type GetItemInList = ItemInListInterface;
 export type CreateItemInListRequest = CreateItemInListDto;
+
+export type AddToBasketResponse = { isSuccess: boolean };
+export type RemoveFromBasketResponse = { isSuccess: boolean };
+export type ClearBasketResponse = { isSuccess: boolean };

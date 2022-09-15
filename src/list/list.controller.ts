@@ -1,6 +1,17 @@
 import { Body, Controller, Delete, Get, Inject, Param, Patch, Post } from "@nestjs/common";
 import { ListService } from "./list.service";
-import { AddRecipeToListResponse, CreateListResponse, DeleteListResponse, DeleteRecipeFromListResponse, EditListResponse, GetListResponse, GetListsResponse } from "../interfaces";
+import {
+  AddRecipeToListResponse,
+  AddToBasketResponse,
+  ClearBasketResponse,
+  CreateListResponse,
+  DeleteListResponse,
+  DeleteRecipeFromListResponse,
+  EditListResponse,
+  GetListResponse,
+  GetListsResponse,
+  RemoveFromBasketResponse,
+} from "../interfaces";
 import { CreateListDto } from "./dto/create-list";
 import { CreateItemInListDto } from "./dto/create-item-in-list";
 import { AddItemtoListResponse, GetListOfItemsResponse, UpdateItemInListResponse } from "../interfaces";
@@ -53,6 +64,21 @@ export class ListController {
   @Patch("/item/:id")
   updateItemInList(@Param("id") id: string, @Body() items: UpdateItemsListDto): Promise<UpdateItemInListResponse> {
     return this.listService.updateItemInList(id, items);
+  }
+
+  @Patch("/item/ad-to-basket/:id")
+  addToBasket(@Param("id") id: string): Promise<AddToBasketResponse> {
+    return this.listService.addToBasket(id);
+  }
+
+  @Patch("/item/remove-from-basket/:id")
+  removeFromBasket(@Param("id") id: string): Promise<RemoveFromBasketResponse> {
+    return this.listService.removeFromBasket(id);
+  }
+
+  @Patch("/clear-basket/:listId")
+  clearBasket(@Param("id") id: string): Promise<ClearBasketResponse> {
+    return this.listService.clearBasket(id);
   }
 
   @Delete("/:id")
