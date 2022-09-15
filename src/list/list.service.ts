@@ -178,15 +178,38 @@ export class ListService {
     } else return { isSuccess: false };
   }
 
-  addToBasket(id: string) {
-    return Promise.resolve(undefined);
+  async addToBasket(id: string) {
+    const item = await this.getItemInList(id);
+    if (item) {
+      item.itemInBasket = true;
+      await item.save();
+      return { isSuccess: true };
+    } else {
+      return { isSuccess: false };
+    }
   }
 
-  removeFromBasket(id: string) {
-    return Promise.resolve(undefined);
+  async removeFromBasket(id: string) {
+    const item = await this.getItemInList(id);
+    if (item) {
+      item.itemInBasket = false;
+      await item.save();
+      return { isSuccess: true };
+    } else {
+      return { isSuccess: false };
+    }
   }
 
-  clearBasket(id: string) {
-    return Promise.resolve(undefined);
+  async clearBasket(id: string) {
+    const list = await this.getList(id);
+    if (list) {
+      for await (const item of list.items) {
+        item.itemInBasket = false;
+        await item.save();
+      }
+      return { isSuccess: true };
+    } else {
+      return { isSuccess: false };
+    }
   }
 }
