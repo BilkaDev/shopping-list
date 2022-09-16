@@ -20,7 +20,7 @@ async function bootstrap() {
       transformOptions: { enableImplicitConversion: true },
       transform: true,
       exceptionFactory: (errors: ValidationError[]) => {
-        return new BadRequestException("Błąd walidacji.");
+        return new BadRequestException("Validation error..");
       },
     }),
   );
