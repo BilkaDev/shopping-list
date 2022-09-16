@@ -6,7 +6,7 @@ import { CreateItemInListDto } from "./dto/create-item-in-list";
 import { AddItemtoListResponse, UpdateItemInListResponse } from "../interfaces";
 import { ProductService } from "../product/product.service";
 import { ItemInList } from "./item-in-list.entity";
-import { UpdateItemsListDto } from "./dto/update-items-list";
+import { UpdateItemsListDto } from "./dto/update-item-in-list";
 import { RecipeService } from "../recipe/recipe.service";
 import { UserService } from "../user/user.service";
 
@@ -125,6 +125,8 @@ export class ListService {
     if (item) {
       item.count = newItem.count;
       item.weight = newItem.weight;
+      item.product.category = newItem.category;
+      await item.product.save();
       await item.save();
       return {
         isSuccess: true,

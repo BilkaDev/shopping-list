@@ -15,7 +15,7 @@ import {
 import { CreateListDto } from "./dto/create-list";
 import { CreateItemInListDto } from "./dto/create-item-in-list";
 import { AddItemtoListResponse, GetListOfItemsResponse, UpdateItemInListResponse } from "../interfaces";
-import { UpdateItemsListDto } from "./dto/update-items-list";
+import { UpdateItemsListDto } from "./dto/update-item-in-list";
 
 @Controller("list")
 export class ListController {
