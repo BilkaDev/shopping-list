@@ -31,3 +31,4 @@ export type EditRecipeRequest = EditRecipeDto;
 export type AddItemToRecipe = CreateRecipeResponse;
 export type DeleteRecipeResponse = EditNameRecipeResponse;
 export type GetRecipesResponse = Omit<RecipeInterface, "description" | "items">[];
+export type GetRecipeResponse = RecipeInterface;

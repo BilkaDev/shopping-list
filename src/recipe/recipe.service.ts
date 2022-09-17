@@ -54,6 +54,13 @@ export class RecipeService {
     }));
   }
 
+  async getOneRecipe(id: string) {
+    return await Recipe.findOne({
+      where: { id },
+      relations: ["items"],
+    });
+  }
+
   async addItemToRecipe(item: AddItemToRecipeDto): Promise<AddItemToRecipe> {
     const recipe = await this.getOneRecipe(item.recipeId);
     if (recipe) {
@@ -69,13 +76,6 @@ export class RecipeService {
         isSuccess: true,
       };
     } else return { isSuccess: false };
-  }
-
-  async getOneRecipe(id: string) {
-    return await Recipe.findOne({
-      where: { id },
-      relations: ["items"],
-    });
   }
 
   async editNamedRecipe({ id, name }: EditRecipeDto): Promise<EditNameRecipeResponse> {

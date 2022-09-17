@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Inject, Param, Patch, Post } from "@nestjs/common";
-import { DeleteRecipeResponse, EditNameRecipeResponse, GetRecipesResponse } from "../interfaces";
+import { DeleteRecipeResponse, EditNameRecipeResponse, GetRecipeResponse, GetRecipesResponse } from "../interfaces";
 import { RecipeService } from "./recipe.service";
 import { CreateListResponse } from "../interfaces";
 import { CreateRecipeDto } from "./dto/create-recipe";
@@ -13,6 +13,10 @@ export class RecipeController {
   @Get("/:userId")
   getUserRecipes(@Param("userId") userId: string): Promise<GetRecipesResponse> {
     return this.recipeService.getUserRecipes(userId);
+  }
+  @Get("/user/:id")
+  getOneRecipe(@Param("id") id: string): Promise<GetRecipeResponse> {
+    return this.recipeService.getOneRecipe(id);
   }
 
   @Post("/")
