@@ -1,9 +1,14 @@
-import { IsInt, IsNotEmpty, IsString, Max, Min } from "class-validator";
+import { IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from "class-validator";
 
 export class CreateItemInListDto {
   @IsString()
   @IsNotEmpty()
+  @IsOptional()
   listId?: string;
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  recipeId?: string;
   @IsString()
   @IsNotEmpty()
   itemId: string;

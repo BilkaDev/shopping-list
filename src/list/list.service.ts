@@ -82,11 +82,19 @@ export class ListService {
   }
 
   async addItemToList(item: CreateItemInListDto): Promise<AddItemtoListResponse> {
-    const list = await this.getList(item.listId);
     const newItem = await this.createItem(item);
-    if (list && newItem) {
+    if (item.listId && newItem) {
+      const list = await this.getList(item.listId);
       list.items.push(newItem);
       await list.save();
+      return {
+        isSuccess: true,
+        id: newItem.id,
+      };
+    } else if (item.recipeId && newItem) {
+      const recipe = await this.recipeService.getOneRecipe(item.recipeId);
+      recipe.items.push(newItem);
+      await recipe.save();
       return {
         isSuccess: true,
         id: newItem.id,
