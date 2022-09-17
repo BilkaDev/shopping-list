@@ -1,5 +1,6 @@
 import { ItemInListInterface } from "../list";
 import { CreateRecipeDto } from "../../recipe/dto/create-recipe";
+import { EditRecipeDto } from "../../recipe/dto/edit-name-recipe";
 
 export interface RecipeInterface {
   id: string;
@@ -25,6 +26,7 @@ export type EditNameRecipeResponse =
     };
 
 export type AddRecipeRequest = CreateRecipeDto;
+export type EditRecipeRequest = EditRecipeDto;
 
 export type AddItemToRecipe = CreateRecipeResponse;
 export type DeleteRecipeResponse = EditNameRecipeResponse;

@@ -4,6 +4,7 @@ import { RecipeService } from "./recipe.service";
 import { CreateListResponse } from "../interfaces";
 import { CreateRecipeDto } from "./dto/create-recipe";
 import { AddItemToRecipeDto } from "./dto/add-item-to-recipe";
+import { EditRecipeDto } from "./dto/edit-name-recipe";
 
 @Controller("recipe")
 export class RecipeController {
@@ -24,9 +25,9 @@ export class RecipeController {
     return this.recipeService.addItemToRecipe(recipe);
   }
 
-  @Patch("/edit/:id/:name")
-  editNamedRecipe(@Param("id") id: string, @Param("name") newName: string): Promise<EditNameRecipeResponse> {
-    return this.recipeService.editNamedRecipe(id, newName);
+  @Patch("/edit")
+  editNamedRecipe(@Body() recipe: EditRecipeDto): Promise<EditNameRecipeResponse> {
+    return this.recipeService.editNamedRecipe(recipe);
   }
 
   @Delete("/:id")

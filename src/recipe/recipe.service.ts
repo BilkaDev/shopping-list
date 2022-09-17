@@ -5,6 +5,7 @@ import { AddItemToRecipe, CreateRecipeResponse, DeleteRecipeResponse, EditNameRe
 import { ListService } from "src/list/list.service";
 import { AddItemToRecipeDto } from "./dto/add-item-to-recipe";
 import { UserService } from "../user/user.service";
+import { EditRecipeDto } from "./dto/edit-name-recipe";
 
 @Injectable()
 export class RecipeService {
@@ -77,10 +78,10 @@ export class RecipeService {
     });
   }
 
-  async editNamedRecipe(id: string, newName: string): Promise<EditNameRecipeResponse> {
+  async editNamedRecipe({ id, name }: EditRecipeDto): Promise<EditNameRecipeResponse> {
     const recipe = await this.getOneRecipe(id);
     if (recipe) {
-      recipe.name = newName;
+      recipe.name = name;
       await recipe.save();
       return { isSuccess: true };
     } else return { isSuccess: false };
