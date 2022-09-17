@@ -1,7 +1,10 @@
+import { ItemInListInterface } from "../list";
+
 export interface RecipeInterface {
   id: string;
   name: string;
   description: string;
+  items: ItemInListInterface[];
 }
 
 export type CreateRecipeResponse =
@@ -22,4 +25,4 @@ export type EditNameRecipeResponse =
 
 export type AddItemToRecipe = CreateRecipeResponse;
 export type DeleteRecipeResponse = EditNameRecipeResponse;
-export type GetRecipesResponse = Omit<RecipeInterface[], "description">;
+export type GetRecipesResponse = Omit<RecipeInterface, "description" | "items">[];

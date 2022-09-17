@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Inject, Param, Patch, Post } from "@nestjs/common";
-import { DeleteRecipeResponse, EditNameRecipeResponse, GetRecipesResponse } from "../interfaces/recipe/recipe";
+import { DeleteRecipeResponse, EditNameRecipeResponse, GetRecipesResponse } from "../interfaces";
 import { RecipeService } from "./recipe.service";
-import { CreateListResponse } from "../interfaces/list/list";
+import { CreateListResponse } from "../interfaces";
 import { CreateRecipeDto } from "./dto/create-recipe";
 import { AddItemToRecipeDto } from "./dto/add-item-to-recipe";
 
@@ -20,7 +20,7 @@ export class RecipeController {
   }
 
   @Post("/add-item")
-  addItemToRecipt(@Body() recipe: AddItemToRecipeDto): Promise<CreateListResponse> {
+  addItemToRecipe(@Body() recipe: AddItemToRecipeDto): Promise<CreateListResponse> {
     return this.recipeService.addItemToRecipe(recipe);
   }
 

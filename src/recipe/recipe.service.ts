@@ -1,7 +1,7 @@
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { Recipe } from "./recipe.entity";
 import { CreateRecipeDto } from "./dto/create-recipe";
-import { AddItemToRecipe, CreateRecipeResponse, DeleteRecipeResponse, EditNameRecipeResponse } from "../interfaces/recipe/recipe";
+import { AddItemToRecipe, CreateRecipeResponse, DeleteRecipeResponse, EditNameRecipeResponse, GetRecipesResponse } from "../interfaces";
 import { ListService } from "src/list/list.service";
 import { AddItemToRecipeDto } from "./dto/add-item-to-recipe";
 import { UserService } from "../user/user.service";
@@ -42,11 +42,15 @@ export class RecipeService {
     return (await this.getUserRecipes(userId)).some(recipe => recipe.name.toLowerCase() === name.toLowerCase());
   }
 
-  async getUserRecipes(userId: string) {
-    return await Recipe.find({
-      where: { user: { id: userId } },
-      relations: ["items"],
-    });
+  async getUserRecipes(userId: string): Promise<GetRecipesResponse> {
+    return (
+      await Recipe.find({
+        where: { user: { id: userId } },
+      })
+    ).map(recipe => ({
+      name: recipe.name,
+      id: recipe.id,
+    }));
   }
 
   async addItemToRecipe(item: AddItemToRecipeDto): Promise<AddItemToRecipe> {
