@@ -8,6 +8,8 @@ export interface ItemInListInterface {
   count: number;
   weight: number;
   itemInBasket: boolean;
+  listId?: string;
+  recipeId?: string;
 }
 
 export type AddItemtoListResponse =

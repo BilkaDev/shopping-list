@@ -1,10 +1,11 @@
 import { Body, Controller, Delete, Get, Inject, Param, Patch, Post } from "@nestjs/common";
-import { DeleteRecipeResponse, EditNameRecipeResponse, GetRecipeResponse, GetRecipesResponse } from "../interfaces";
+import { DeleteRecipeResponse, EditDescriptionRecipeResponse, EditNameRecipeResponse, GetRecipeResponse, GetRecipesResponse } from "../interfaces";
 import { RecipeService } from "./recipe.service";
 import { CreateListResponse } from "../interfaces";
 import { CreateRecipeDto } from "./dto/create-recipe";
 import { AddItemToRecipeDto } from "./dto/add-item-to-recipe";
 import { EditRecipeDto } from "./dto/edit-name-recipe";
+import { EditDescriptionRecipeDto } from "./dto/edit-description-recipe";
 
 @Controller("recipe")
 export class RecipeController {
@@ -32,6 +33,11 @@ export class RecipeController {
   @Patch("/edit")
   editNamedRecipe(@Body() recipe: EditRecipeDto): Promise<EditNameRecipeResponse> {
     return this.recipeService.editNamedRecipe(recipe);
+  }
+
+  @Patch("/edit-description")
+  editDescriptionRecipe(@Body() recipe: EditDescriptionRecipeDto): Promise<EditDescriptionRecipeResponse> {
+    return this.recipeService.editDescriptionRecipe(recipe);
   }
 
   @Delete("/:id")

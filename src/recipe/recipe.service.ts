@@ -6,6 +6,7 @@ import { ListService } from "src/list/list.service";
 import { AddItemToRecipeDto } from "./dto/add-item-to-recipe";
 import { UserService } from "../user/user.service";
 import { EditRecipeDto } from "./dto/edit-name-recipe";
+import { EditDescriptionRecipeDto } from "./dto/edit-description-recipe";
 
 @Injectable()
 export class RecipeService {
@@ -94,4 +95,13 @@ export class RecipeService {
       return { isSuccess: true };
     } else return { isSuccess: false };
   }
+
+  editDescriptionRecipe = async ({ description, id }: EditDescriptionRecipeDto) => {
+    const recipe = await this.getOneRecipe(id);
+    if (recipe) {
+      recipe.description = description;
+      await recipe.save();
+      return { isSuccess: true };
+    } else return { isSuccess: false };
+  };
 }
