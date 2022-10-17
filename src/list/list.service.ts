@@ -217,6 +217,13 @@ export class ListService {
         item.itemInBasket = false;
         await item.save();
       }
+      for await (const recipe of list.recipes) {
+        for await (const item of recipe.items) {
+          item.itemInBasket = false;
+          await item.save();
+        }
+      }
+      console.log(list.recipes[0].items);
       return { isSuccess: true };
     } else {
       return { isSuccess: false };
