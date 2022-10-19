@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from "@nestjs/common";
+import { BadRequestException, forwardRef, Inject, Injectable } from "@nestjs/common";
 import { Recipe } from "./recipe.entity";
 import { CreateRecipeDto } from "./dto/create-recipe";
 import { AddItemToRecipe, CreateRecipeResponse, DeleteRecipeResponse, EditNameRecipeResponse, GetRecipesResponse } from "../interfaces";
@@ -56,10 +56,14 @@ export class RecipeService {
   }
 
   async getOneRecipe(id: string) {
-    return await Recipe.findOne({
+    const recipe = await Recipe.findOne({
       where: { id },
       relations: ["items"],
     });
+    if (recipe === null) {
+      throw new BadRequestException("Cannot find recipe.");
+    }
+    return recipe;
   }
 
   async addItemToRecipe(item: AddItemToRecipeDto): Promise<AddItemToRecipe> {
