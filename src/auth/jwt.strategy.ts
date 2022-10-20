@@ -23,7 +23,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!payload || !payload.id) {
       return done(new UnauthorizedException(), false);
     }
-
     const user = await User.findOne({
       where: {
         currentTokenId: payload.id,

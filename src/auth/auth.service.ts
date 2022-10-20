@@ -100,10 +100,6 @@ export class AuthService {
   }
 
   async logout(user: User, res: Response) {
-    console.log(user);
-    console.log(user);
-    console.log(user);
-    console.log(user);
     try {
       user.currentTokenId = null;
       await user.save();
