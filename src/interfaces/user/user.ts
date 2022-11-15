@@ -8,3 +8,5 @@ export interface ChangePasswordResponse {
 }
 
 export type RegisterUserResponse = { id: string; email: string } | { isSuccess: false; message: string };
+
+export type RecoverPasswordResponse = ChangePasswordResponse;

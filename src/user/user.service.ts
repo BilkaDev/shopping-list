@@ -1,9 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { RegisterDto } from "./dto/register.dto";
 import { User } from "./user.entity";
-import { ChangePasswordResponse, RegisterUserResponse } from "../interfaces";
+import { ChangePasswordResponse, RecoverPasswordResponse, RegisterUserResponse } from "../interfaces";
 import { hashPwd, randomSalz } from "../utils/hash-pwd";
 import { ChangePasswordDto } from "./dto/change-password.dto";
+import { randomPassword } from "../utils/random-password";
+import { RecoverPasswordDto } from "./dto/recover-password.dto";
 
 @Injectable()
 export class UserService {
@@ -32,6 +34,34 @@ export class UserService {
     }
     user.pwdHash = hashPwd(newPwd.newPwd, user.salz);
     await user.save();
+    return {
+      isSuccess: true,
+    };
+  }
+
+  async recover(recover: RecoverPasswordDto): Promise<RecoverPasswordResponse> {
+    const user = await User.findOne({
+      where: {
+        email: recover.email,
+      },
+    });
+
+    if (!user) {
+      return {
+        isSuccess: false,
+      };
+    }
+
+    const password = randomPassword();
+    user.pwdHash = hashPwd(password, user.salz);
+    await user.save();
+
+    // this.mailService.sendMail(
+    //     recover.email,
+    //     'recover password,
+    //     `<p>Twoje nowe hasło to:${password}</p>`,
+    // );
+
     return {
       isSuccess: true,
     };

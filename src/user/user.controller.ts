@@ -1,11 +1,12 @@
 import { Body, Controller, Inject, Post, UseGuards } from "@nestjs/common";
 import { RegisterDto } from "./dto/register.dto";
 import { UserService } from "./user.service";
-import { ChangePasswordResponse, RegisterUserResponse } from "../interfaces";
+import { ChangePasswordResponse, RecoverPasswordResponse, RegisterUserResponse } from "../interfaces";
 import { ChangePasswordDto } from "./dto/change-password.dto";
 import { AuthGuard } from "@nestjs/passport";
 import { UserObj } from "../decorators/user-obj.decorator";
 import { User } from "./user.entity";
+import { RecoverPasswordDto } from "./dto/recover-password.dto";
 
 @Controller("user")
 export class UserController {
@@ -14,6 +15,11 @@ export class UserController {
   @Post("/")
   register(@Body() newUser: RegisterDto): Promise<RegisterUserResponse> {
     return this.userService.register(newUser);
+  }
+
+  @Post("/recover")
+  recoverPassword(@Body() recover: RecoverPasswordDto): Promise<RecoverPasswordResponse> {
+    return this.userService.recover(recover);
   }
 
   @UseGuards(AuthGuard("jwt"))
