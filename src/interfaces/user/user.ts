@@ -3,4 +3,8 @@ export interface UserInterface {
   email: string;
 }
 
+export interface ChangePasswordResponse {
+  isSuccess: boolean;
+}
+
 export type RegisterUserResponse = { id: string; email: string } | { isSuccess: false; message: string };

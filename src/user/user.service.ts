@@ -1,8 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { RegisterDto } from "./dto/register.dto";
 import { User } from "./user.entity";
-import { RegisterUserResponse } from "../interfaces";
+import { ChangePasswordResponse, RegisterUserResponse } from "../interfaces";
 import { hashPwd, randomSalz } from "../utils/hash-pwd";
+import { ChangePasswordDto } from "./dto/change-password.dto";
 
 @Injectable()
 export class UserService {
@@ -20,7 +21,19 @@ export class UserService {
       return { isSuccess: false, message: "email is already in use" };
     }
   }
+
   async getOneUser(id: string): Promise<User> {
     return await User.findOne({ where: { id } });
+  }
+
+  async changePassword(newPwd: ChangePasswordDto, user: User): Promise<ChangePasswordResponse> {
+    if (user.pwdHash != hashPwd(newPwd.pwd, user.salz)) {
+      return { isSuccess: false };
+    }
+    user.pwdHash = hashPwd(newPwd.newPwd, user.salz);
+    await user.save();
+    return {
+      isSuccess: true,
+    };
   }
 }
