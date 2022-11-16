@@ -7,6 +7,7 @@ import { ChangePasswordDto } from "./dto/change-password.dto";
 import { randomPassword } from "../utils/random-password";
 import { RecoverPasswordDto } from "./dto/recover-password.dto";
 import { MailService } from "../mail/mail.service";
+import { recoverPasswordEmailTemplate } from "../templates/recover-password";
 
 @Injectable()
 export class UserService {
@@ -58,7 +59,8 @@ export class UserService {
     user.pwdHash = hashPwd(password, user.salz);
     await user.save();
 
-    await this.mailService.sendMail(recover.email, "recover password", `<p>Your new password is:${password}</p>`);
+    // await this.mailService.sendMail(recover.email, "recover password", `<p>Your new password is:${password}</p>`);
+    await this.mailService.sendMail(recover.email, "recover password", recoverPasswordEmailTemplate(password));
 
     return {
       isSuccess: true,
