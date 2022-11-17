@@ -34,4 +34,8 @@ export class User extends BaseEntity implements UserInterface {
 
   @Column()
   salz: string;
+  @Column({
+    default: null,
+  })
+  photoFn: string;
 }

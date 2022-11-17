@@ -16,7 +16,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         message: "Please try again in a few minutes.",
       });
     } else {
-      return response.json({
+      return response.status(status).json({
         isSuccess: false,
         message: exception.message,
       });
