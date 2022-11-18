@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { RegisterDto } from "./dto/register.dto";
 import { User } from "./user.entity";
 import { AddAvatarResponse, ChangePasswordResponse, RecoverPasswordResponse, RegisterUserResponse } from "../interfaces";
@@ -55,7 +55,7 @@ export class UserService {
 
     if (!user) {
       return {
-        isSuccess: false,
+        isSuccess: true,
       };
     }
 
