@@ -90,6 +90,7 @@ export class AuthService {
         .json({
           isSuccess: true,
           userId: user.id,
+          email: user.email,
         });
     } catch (e) {
       return res.json({
@@ -117,5 +118,20 @@ export class AuthService {
         error: e.message,
       });
     }
+  }
+
+  async autoLogin(user: User, res: Response) {
+    const token = this.createToken(await this.generateToken(user));
+    return res
+      .cookie("jwt", token.accessToken, {
+        secure: false,
+        domain: "localhost",
+        httpOnly: true,
+      })
+      .json({
+        isSuccess: true,
+        userId: user.id,
+        email: user.email,
+      });
   }
 }
