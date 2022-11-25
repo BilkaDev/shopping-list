@@ -19,6 +19,7 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
       transformOptions: { enableImplicitConversion: true },
       transform: true,
+      forbidUnknownValues: true,
       exceptionFactory: (errors: ValidationError[]) => {
         return new BadRequestException("Validation error..");
       },

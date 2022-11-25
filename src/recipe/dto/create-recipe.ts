@@ -1,5 +1,6 @@
 import { CreateItemInListDto } from "../../list/dto/create-item-in-list";
 import { IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { Type } from "class-transformer";
 
 export class CreateRecipeDto {
   @IsString()
@@ -9,8 +10,8 @@ export class CreateRecipeDto {
   @IsNotEmpty()
   userId: string;
   @IsString()
-  @IsOptional()
   description: string;
+  @Type(() => Array<CreateItemInListDto>)
   @IsOptional()
-  items: CreateItemInListDto[];
+  items?: CreateItemInListDto[];
 }

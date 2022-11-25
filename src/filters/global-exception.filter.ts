@@ -13,11 +13,13 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     if (status === 500) {
       return response.json({
         isSuccess: false,
+        status,
         message: "Please try again in a few minutes.",
       });
     } else {
       return response.status(status).json({
         isSuccess: false,
+        status,
         message: exception.message,
       });
     }
