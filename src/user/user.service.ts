@@ -70,7 +70,7 @@ export class UserService {
     };
   }
 
-  async addAvatar(user, files: MulterDiskUploadedFiles): Promise<AddAvatarResponse> {
+  async addAvatar(user: User, files: MulterDiskUploadedFiles): Promise<AddAvatarResponse> {
     const photo = files?.photo?.[0] ?? null;
     try {
       if (user.photoFn) {

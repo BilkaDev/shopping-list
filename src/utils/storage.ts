@@ -17,14 +17,14 @@ export function multerStorage(dest: string) {
   return diskStorage({
     destination: (req, file, cb) => cb(null, dest),
     filename: (req, file, cb) => {
-      const ext = MIME_TYPE_MAP[file.mimetype];
+      const ext: string = (MIME_TYPE_MAP as any)[file.mimetype] as string;
       return cb(null, `${uuid()}.${ext}`);
     },
   });
 }
 
-export function multerFileFilter(req, file, cb) {
-  const isValid = !!MIME_TYPE_MAP[file.mimetype];
+export function multerFileFilter(req: Request, file: Express.Multer.File, cb: (error: Error, destination: boolean) => void) {
+  const isValid = !!(MIME_TYPE_MAP as any)[file.mimetype];
   if (!isValid) {
     cb(new BadRequestException("Unsupported file type"), false);
   } else {

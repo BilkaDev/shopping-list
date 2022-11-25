@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
 import { ListService } from "./list.service";
 import {
   AddRecipeToListResponse,
@@ -20,7 +20,7 @@ import { AuthGuard } from "@nestjs/passport";
 
 @Controller("list")
 export class ListController {
-  constructor(@Inject(ListService) private listService: ListService) {}
+  constructor(private listService: ListService) {}
 
   @UseGuards(AuthGuard("jwt"))
   @Get("/:userId")

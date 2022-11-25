@@ -1,18 +1,20 @@
-import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
 import { ProductService } from "./product.service";
 import { AddProductResponse, DeleteProductResponse, GetProductResponse, ProductListResponse, UpdateProductResponse } from "../interfaces";
 import { CreateProductDto } from "./dto/create-product";
 import { UpdateProductDto } from "./dto/update-product";
 import { AuthGuard } from "@nestjs/passport";
+import { UserObj } from "../decorators/user-obj.decorator";
+import { User } from "../user/user.entity";
 
 @Controller("product")
 export class ProductController {
-  constructor(@Inject(ProductService) private productService: ProductService) {}
+  constructor(private productService: ProductService) {}
 
   @UseGuards(AuthGuard("jwt"))
-  @Get("/:userId")
-  getUserProductsList(@Param("userId") userId: string): Promise<ProductListResponse> {
-    return this.productService.getUserProducts(userId);
+  @Get("/")
+  getUserProductsList(@UserObj() user: User): Promise<ProductListResponse> {
+    return this.productService.getUserProducts(user.id);
   }
 
   @UseGuards(AuthGuard("jwt"))
@@ -23,8 +25,8 @@ export class ProductController {
 
   @UseGuards(AuthGuard("jwt"))
   @Post("/")
-  addProduct(@Body() product: CreateProductDto): Promise<AddProductResponse> {
-    return this.productService.addProduct(product);
+  addProduct(@UserObj() user: User, @Body() product: CreateProductDto): Promise<AddProductResponse> {
+    return this.productService.addProduct(product, user);
   }
 
   @UseGuards(AuthGuard("jwt"))
@@ -34,8 +36,8 @@ export class ProductController {
   }
 
   @UseGuards(AuthGuard("jwt"))
-  @Patch("/:productId/:userId")
-  updateProduct(@Param("productId") productId: string, @Param("userId") userId: string, @Body() product: UpdateProductDto): Promise<UpdateProductResponse> {
-    return this.productService.updateProduct(productId, userId, product);
+  @Patch("/:productId")
+  updateProduct(@UserObj() user: User, @Param("productId") productId: string, @Body() product: UpdateProductDto): Promise<UpdateProductResponse> {
+    return this.productService.updateProduct(productId, user.id, product);
   }
 }

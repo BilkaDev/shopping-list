@@ -29,7 +29,7 @@ export class ListService {
     });
   }
 
-  async hasList(userId, name: string): Promise<boolean> {
+  async hasList(userId: string, name: string): Promise<boolean> {
     return (await this.getUserLists(userId)).some(list => list.listName.toLowerCase() === name.toLowerCase());
   }
 
@@ -106,7 +106,7 @@ export class ListService {
   }
 
   // service Items in list
-  async getListOfItems(userId): Promise<ItemInList[]> {
+  async getListOfItems(userId: string): Promise<ItemInList[]> {
     return await ItemInList.find({ where: { product: { user: { id: userId } } } });
   }
 

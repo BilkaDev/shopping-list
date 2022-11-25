@@ -1,13 +1,12 @@
-import { forwardRef, Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { Product } from "./product.entity";
 import { AddProductResponse, DeleteProductResponse, ProductListResponse, UpdateProductResponse } from "../interfaces";
 import { CreateProductDto } from "./dto/create-product";
-import { UserService } from "../user/user.service";
+import { User } from "../user/user.entity";
+import { UpdateProductDto } from "./dto/update-product";
 
 @Injectable()
 export class ProductService {
-  constructor(@Inject(forwardRef(() => UserService)) private user: UserService) {}
-
   async getUserProducts(userId: string): Promise<ProductListResponse> {
     const products = await Product.find({
       where: {
@@ -20,7 +19,7 @@ export class ProductService {
     };
   }
 
-  async getProduct(productId): Promise<Product> {
+  async getProduct(productId: string): Promise<Product> {
     return await Product.findOne({ where: { id: productId } });
   }
 
@@ -28,11 +27,10 @@ export class ProductService {
     return (await this.getUserProducts(userId)).products.some(product => product.name.toLowerCase() === name.toLowerCase());
   }
 
-  async addProduct(product: CreateProductDto): Promise<AddProductResponse> {
-    const { name, category, userId } = product;
-    const user = await this.user.getOneUser(product.userId);
-    const productItem = await this.hasProducts(userId, name);
-    if (productItem || !user) {
+  async addProduct(product: CreateProductDto, user: User): Promise<AddProductResponse> {
+    const { name, category } = product;
+    const productItem = await this.hasProducts(user.id, name);
+    if (productItem) {
       return { isSuccess: false };
     }
     const newProduct = new Product();
@@ -60,7 +58,7 @@ export class ProductService {
       };
   }
 
-  async updateProduct(productId: string, userId: string, updateProduct): Promise<UpdateProductResponse> {
+  async updateProduct(productId: string, userId: string, updateProduct: UpdateProductDto): Promise<UpdateProductResponse> {
     const { category, name } = updateProduct;
     const isProductName = await this.hasProducts(userId, name);
     const product = await this.getProduct(productId);

@@ -10,8 +10,4 @@ export class CreateProductDto {
   @IsNumber()
   @IsNotEmpty()
   category: number;
-
-  @IsString()
-  @IsNotEmpty()
-  userId: string;
 }
