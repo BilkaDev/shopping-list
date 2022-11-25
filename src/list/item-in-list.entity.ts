@@ -9,7 +9,7 @@ export class ItemInList extends BaseEntity implements ItemInListInterface {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @ManyToOne(type => Product, entity => entity.items, { eager: true, onDelete: "CASCADE" })
+  @ManyToOne(() => Product, entity => entity.items, { eager: true, onDelete: "CASCADE" })
   @JoinColumn()
   product: Product;
 
@@ -28,13 +28,13 @@ export class ItemInList extends BaseEntity implements ItemInListInterface {
   })
   itemInBasket: boolean;
 
-  @ManyToOne(type => List, entity => entity.items, {
+  @ManyToOne(() => List, entity => entity.items, {
     onDelete: "CASCADE",
   })
   @JoinColumn()
   list: List;
 
-  @ManyToOne(type => Recipe, entity => entity.items, {
+  @ManyToOne(() => Recipe, entity => entity.items, {
     onDelete: "CASCADE",
   })
   @JoinColumn()

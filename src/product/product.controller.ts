@@ -16,9 +16,9 @@ export class ProductController {
   }
 
   @UseGuards(AuthGuard("jwt"))
-  @Get("/item/:id")
-  getProduct(@Param("id") id: string): Promise<GetProductResponse> {
-    return this.productService.getProduct(id);
+  @Get("/item/:productId")
+  getProduct(@Param("productId") productId: string): Promise<GetProductResponse> {
+    return this.productService.getProduct(productId);
   }
 
   @UseGuards(AuthGuard("jwt"))
@@ -28,9 +28,9 @@ export class ProductController {
   }
 
   @UseGuards(AuthGuard("jwt"))
-  @Delete("/:id")
-  removeProduct(@Param("id") id: string): Promise<DeleteProductResponse> {
-    return this.productService.deleteProduct(id);
+  @Delete("/:productId")
+  removeProduct(@Param("productId") productId: string): Promise<DeleteProductResponse> {
+    return this.productService.deleteProduct(productId);
   }
 
   @UseGuards(AuthGuard("jwt"))

@@ -35,9 +35,9 @@ export class ListController {
   }
 
   @UseGuards(AuthGuard("jwt"))
-  @Get("/user/:id")
-  getList(@Param("id") id: string): Promise<GetListResponse> {
-    return this.listService.getList(id);
+  @Get("/user/:listId")
+  getList(@Param("listId") listId: string): Promise<GetListResponse> {
+    return this.listService.getList(listId);
   }
 
   @UseGuards(AuthGuard("jwt"))
@@ -65,50 +65,50 @@ export class ListController {
   }
 
   @UseGuards(AuthGuard("jwt"))
-  @Patch("/:id")
-  editList(@Param("id") id: string, @Body() list: CreateListDto): Promise<EditListResponse> {
-    return this.listService.editList(id, list);
+  @Patch("/:listId")
+  editList(@Param("listId") listId: string, @Body() list: CreateListDto): Promise<EditListResponse> {
+    return this.listService.editList(listId, list);
   }
 
   @UseGuards(AuthGuard("jwt"))
-  @Patch("/item/:id")
-  updateItemInList(@Param("id") id: string, @Body() items: UpdateItemsListDto): Promise<UpdateItemInListResponse> {
-    return this.listService.updateItemInList(id, items);
+  @Patch("/item/:itemId")
+  updateItemInList(@Param("itemId") itemId: string, @Body() items: UpdateItemsListDto): Promise<UpdateItemInListResponse> {
+    return this.listService.updateItemInList(itemId, items);
   }
 
   @UseGuards(AuthGuard("jwt"))
-  @Patch("/item/ad-to-basket/:id")
-  addToBasket(@Param("id") id: string): Promise<AddToBasketResponse> {
-    return this.listService.addToBasket(id);
+  @Patch("/item/ad-to-basket/:itemId")
+  addToBasket(@Param("itemId") itemId: string): Promise<AddToBasketResponse> {
+    return this.listService.addToBasket(itemId);
   }
 
   @UseGuards(AuthGuard("jwt"))
-  @Patch("/item/remove-from-basket/:id")
-  removeFromBasket(@Param("id") id: string): Promise<RemoveFromBasketResponse> {
-    return this.listService.removeFromBasket(id);
+  @Patch("/item/remove-from-basket/:itemId")
+  removeFromBasket(@Param("itemId") itemId: string): Promise<RemoveFromBasketResponse> {
+    return this.listService.removeFromBasket(itemId);
   }
 
   @UseGuards(AuthGuard("jwt"))
   @Patch("/clear-basket/:listId")
-  clearBasket(@Param("id") id: string): Promise<ClearBasketResponse> {
-    return this.listService.clearBasket(id);
+  clearBasket(@Param("listId") listId: string): Promise<ClearBasketResponse> {
+    return this.listService.clearBasket(listId);
   }
 
   @UseGuards(AuthGuard("jwt"))
-  @Delete("/:id")
-  deleteList(@Param("id") id: string): Promise<DeleteListResponse> {
-    return this.listService.deleteList(id);
+  @Delete("/:listId")
+  deleteList(@Param("listId") listId: string): Promise<DeleteListResponse> {
+    return this.listService.deleteList(listId);
   }
 
   @UseGuards(AuthGuard("jwt"))
-  @Delete("/item/:id")
-  deleteItemInList(@Param("id") id: string): Promise<DeleteListResponse> {
-    return this.listService.deleteItemInList(id);
+  @Delete("/item/:itemId")
+  deleteItemInList(@Param("itemId") itemId: string): Promise<DeleteListResponse> {
+    return this.listService.deleteItemInList(itemId);
   }
 
   @UseGuards(AuthGuard("jwt"))
-  @Delete("/item/clear/:id")
-  clearList(@Param("id") id: string): Promise<DeleteListResponse> {
-    return this.listService.clearList(id);
+  @Delete("/item/clear/:listId")
+  clearList(@Param("listId") listId: string): Promise<DeleteListResponse> {
+    return this.listService.clearList(listId);
   }
 }

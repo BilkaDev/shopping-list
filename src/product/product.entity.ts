@@ -19,10 +19,10 @@ export class Product extends BaseEntity implements ProductInterface {
   })
   category: ProductCategory;
 
-  @OneToMany(type => ItemInList, entity => entity.product)
+  @OneToMany(() => ItemInList, entity => entity.product)
   items: ItemInList[];
 
-  @ManyToOne(type => User, entity => entity.products)
+  @ManyToOne(() => User, entity => entity.products)
   @JoinColumn()
   user: User;
 }

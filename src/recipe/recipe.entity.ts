@@ -19,13 +19,13 @@ export class Recipe extends BaseEntity implements RecipeInterface {
   })
   description: string;
 
-  @OneToMany(type => ItemInList, entity => entity.recipe)
+  @OneToMany(() => ItemInList, entity => entity.recipe)
   items: ItemInList[];
 
-  @ManyToMany(type => List, entity => entity.recipes)
+  @ManyToMany(() => List, entity => entity.recipes)
   lists: List[];
 
-  @ManyToOne(type => User, entity => entity.recipes)
+  @ManyToOne(() => User, entity => entity.recipes)
   @JoinColumn()
   user: User;
 }

@@ -1,5 +1,5 @@
 import { BaseEntity, Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { ListInterface } from "../interfaces/list/list";
+import { ListInterface } from "../interfaces";
 import { ItemInList } from "./item-in-list.entity";
 import { Recipe } from "../recipe/recipe.entity";
 import { User } from "../user/user.entity";
@@ -14,14 +14,14 @@ export class List extends BaseEntity implements ListInterface {
   })
   listName: string;
 
-  @OneToMany(type => ItemInList, entity => entity.list)
+  @OneToMany(() => ItemInList, entity => entity.list)
   items: ItemInList[];
 
-  @ManyToMany(type => Recipe, entity => entity.lists)
+  @ManyToMany(() => Recipe, entity => entity.lists)
   @JoinTable()
   recipes: Recipe[];
 
-  @ManyToOne(type => User, entity => entity.lists)
+  @ManyToOne(() => User, entity => entity.lists)
   @JoinColumn()
   user: User;
 }

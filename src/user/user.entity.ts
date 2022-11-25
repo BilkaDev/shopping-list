@@ -14,13 +14,13 @@ export class User extends BaseEntity implements UserInterface {
   })
   email: string;
 
-  @OneToMany(type => Product, entity => entity.user)
+  @OneToMany(() => Product, entity => entity.user)
   products: Product[];
 
-  @OneToMany(type => List, entity => entity.user)
+  @OneToMany(() => List, entity => entity.user)
   lists: List[];
 
-  @OneToMany(type => Recipe, entity => entity.user)
+  @OneToMany(() => Recipe, entity => entity.user)
   recipes: Recipe[];
 
   @Column()

@@ -22,9 +22,9 @@ export class ListService {
     return await List.find({ where: { user: { id: userId } } });
   }
 
-  async getList(id: string): Promise<List> {
+  async getList(listId: string): Promise<List> {
     return await List.findOne({
-      where: { id },
+      where: { id: listId },
       relations: ["items", "recipes", "recipes.items"],
     });
   }
@@ -49,8 +49,8 @@ export class ListService {
     } else return { isSuccess: false };
   }
 
-  async deleteList(id: string): Promise<DeleteListResponse> {
-    const list = await this.getList(id);
+  async deleteList(listId: string): Promise<DeleteListResponse> {
+    const list = await this.getList(listId);
     if (list) {
       // for (const item of list.items) {
       //     await item.remove();
@@ -65,11 +65,11 @@ export class ListService {
       };
   }
 
-  async editList(id: string, list: CreateListDto): Promise<EditListResponse> {
+  async editList(listId: string, list: CreateListDto): Promise<EditListResponse> {
     const { listName } = list;
     const check = await this.hasList(list.userId, listName);
     if (!check) {
-      const { affected } = await List.update(id, {
+      const { affected } = await List.update(listId, {
         listName,
       });
       if (affected) {
@@ -128,8 +128,8 @@ export class ListService {
     }
   }
 
-  async updateItemInList(id: string, newItem: UpdateItemsListDto): Promise<UpdateItemInListResponse> {
-    const item = await this.getItemInList(id);
+  async updateItemInList(itemId: string, newItem: UpdateItemsListDto): Promise<UpdateItemInListResponse> {
+    const item = await this.getItemInList(itemId);
     if (item) {
       item.count = newItem.count;
       item.weight = newItem.weight;
@@ -144,8 +144,8 @@ export class ListService {
     }
   }
 
-  async deleteItemInList(id: string) {
-    const item = await this.getItemInList(id);
+  async deleteItemInList(itemId: string) {
+    const item = await this.getItemInList(itemId);
     if (item) {
       await item.remove();
       return { isSuccess: true };
@@ -154,8 +154,8 @@ export class ListService {
     }
   }
 
-  async clearList(id: string) {
-    const list = await this.getList(id);
+  async clearList(listId: string) {
+    const list = await this.getList(listId);
     if (list) {
       for (const item of list.items) {
         await item.remove();
@@ -188,8 +188,8 @@ export class ListService {
     } else return { isSuccess: false };
   }
 
-  async addToBasket(id: string) {
-    const item = await this.getItemInList(id);
+  async addToBasket(itemId: string) {
+    const item = await this.getItemInList(itemId);
     if (item) {
       item.itemInBasket = true;
       await item.save();
@@ -199,8 +199,8 @@ export class ListService {
     }
   }
 
-  async removeFromBasket(id: string) {
-    const item = await this.getItemInList(id);
+  async removeFromBasket(itemId: string) {
+    const item = await this.getItemInList(itemId);
     if (item) {
       item.itemInBasket = false;
       await item.save();
@@ -210,8 +210,8 @@ export class ListService {
     }
   }
 
-  async clearBasket(id: string) {
-    const list = await this.getList(id);
+  async clearBasket(listId: string) {
+    const list = await this.getList(listId);
     if (list) {
       for await (const item of list.items) {
         item.itemInBasket = false;

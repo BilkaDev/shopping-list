@@ -19,9 +19,9 @@ export class RecipeController {
   }
 
   @UseGuards(AuthGuard("jwt"))
-  @Get("/user/:id")
-  getOneRecipe(@Param("id") id: string): Promise<GetRecipeResponse> {
-    return this.recipeService.getOneRecipe(id);
+  @Get("/user/:recipeId")
+  getOneRecipe(@Param("recipeId") recipeId: string): Promise<GetRecipeResponse> {
+    return this.recipeService.getOneRecipe(recipeId);
   }
 
   @UseGuards(AuthGuard("jwt"))
@@ -49,8 +49,8 @@ export class RecipeController {
   }
 
   @UseGuards(AuthGuard("jwt"))
-  @Delete("/:id")
-  deleteRecipe(@Param("id") recipeId: string): Promise<DeleteRecipeResponse> {
+  @Delete("/:recipeId")
+  deleteRecipe(@Param("recipeId") recipeId: string): Promise<DeleteRecipeResponse> {
     return this.recipeService.deleteRecipe(recipeId);
   }
 }

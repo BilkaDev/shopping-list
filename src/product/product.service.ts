@@ -20,8 +20,8 @@ export class ProductService {
     };
   }
 
-  async getProduct(id): Promise<Product> {
-    return await Product.findOne({ where: { id } });
+  async getProduct(productId): Promise<Product> {
+    return await Product.findOne({ where: { id: productId } });
   }
 
   async hasProducts(userId: string, name: string): Promise<boolean> {
@@ -47,8 +47,8 @@ export class ProductService {
     };
   }
 
-  async deleteProduct(id: string): Promise<DeleteProductResponse> {
-    const item = await this.getProduct(id);
+  async deleteProduct(productId: string): Promise<DeleteProductResponse> {
+    const item = await this.getProduct(productId);
     if (item) {
       await item.remove();
       return {

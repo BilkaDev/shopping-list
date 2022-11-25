@@ -15,7 +15,6 @@ export class RecipeService {
   async createRecipe(recipe: CreateRecipeDto): Promise<CreateRecipeResponse> {
     const user = await this.userService.getOneUser(recipe.userId);
     if (!user) return { isSuccess: false };
-    console.log(user);
     const checkName = await this.hasRecipe(recipe.userId, recipe.name);
     if (!checkName) {
       const newRecipe = new Recipe();
@@ -26,7 +25,6 @@ export class RecipeService {
           count: item.count,
           weight: item.weight,
         });
-        console.log(newRecipe);
         newRecipe.items.push(createItem);
       }
       newRecipe.description = recipe.description;
@@ -55,9 +53,9 @@ export class RecipeService {
     }));
   }
 
-  async getOneRecipe(id: string) {
+  async getOneRecipe(recipeId: string) {
     const recipe = await Recipe.findOne({
-      where: { id },
+      where: { id: recipeId },
       relations: ["items"],
     });
     if (recipe === null) {
