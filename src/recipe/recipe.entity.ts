@@ -1,11 +1,10 @@
 import { BaseEntity, Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { ItemInList } from "../list/item-in-list.entity";
 import { List } from "../list/list.entity";
-import { RecipeInterface } from "../interfaces";
 import { User } from "../user/user.entity";
 
 @Entity()
-export class Recipe extends BaseEntity implements RecipeInterface {
+export class Recipe extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 

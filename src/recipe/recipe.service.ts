@@ -7,6 +7,7 @@ import { AddItemToRecipeDto } from "./dto/add-item-to-recipe";
 import { UserService } from "../user/user.service";
 import { EditRecipeDto } from "./dto/edit-name-recipe";
 import { EditDescriptionRecipeDto } from "./dto/edit-description-recipe";
+import { ILike } from "typeorm";
 
 @Injectable()
 export class RecipeService {
@@ -38,8 +39,14 @@ export class RecipeService {
     } else return { isSuccess: false };
   }
 
-  private async hasRecipe(userId: string, name: string) {
-    return (await this.getUserRecipes(userId)).some(recipe => recipe.name.toLowerCase() === name.toLowerCase());
+  async hasRecipe(userId: string, name: string) {
+    const recipe = await Recipe.find({
+      where: {
+        name: ILike(name),
+        user: { id: userId },
+      },
+    });
+    return recipe.length > 0;
   }
 
   async getUserRecipes(userId: string): Promise<GetRecipesResponse> {
@@ -53,9 +60,9 @@ export class RecipeService {
     }));
   }
 
-  async getOneRecipe(recipeId: string) {
+  async getOneRecipe(recipeId: string, userId: string) {
     const recipe = await Recipe.findOne({
-      where: { id: recipeId },
+      where: { id: recipeId, user: { id: userId } },
       relations: ["items"],
     });
     if (recipe === null) {
@@ -64,8 +71,8 @@ export class RecipeService {
     return recipe;
   }
 
-  async addItemToRecipe(item: AddItemToRecipeDto): Promise<AddItemToRecipe> {
-    const recipe = await this.getOneRecipe(item.recipeId);
+  async addItemToRecipe(item: AddItemToRecipeDto, userId: string): Promise<AddItemToRecipe> {
+    const recipe = await this.getOneRecipe(item.recipeId, userId);
     if (recipe) {
       const createItem = await this.listService.createItem({
         itemId: item.itemId,
@@ -81,8 +88,8 @@ export class RecipeService {
     } else return { isSuccess: false };
   }
 
-  async editNamedRecipe({ id, name }: EditRecipeDto): Promise<EditNameRecipeResponse> {
-    const recipe = await this.getOneRecipe(id);
+  async editNamedRecipe({ id, name }: EditRecipeDto, userId: string): Promise<EditNameRecipeResponse> {
+    const recipe = await this.getOneRecipe(id, userId);
     if (recipe) {
       recipe.name = name;
       await recipe.save();
@@ -90,16 +97,16 @@ export class RecipeService {
     } else return { isSuccess: false };
   }
 
-  async deleteRecipe(recipeId: string): Promise<DeleteRecipeResponse> {
-    const recipe = await this.getOneRecipe(recipeId);
+  async deleteRecipe(recipeId: string, userId: string): Promise<DeleteRecipeResponse> {
+    const recipe = await this.getOneRecipe(recipeId, userId);
     if (recipe) {
       await recipe.remove();
       return { isSuccess: true };
     } else return { isSuccess: false };
   }
 
-  editDescriptionRecipe = async ({ description, id }: EditDescriptionRecipeDto) => {
-    const recipe = await this.getOneRecipe(id);
+  editDescriptionRecipe = async ({ description, id }: EditDescriptionRecipeDto, userId: string) => {
+    const recipe = await this.getOneRecipe(id, userId);
     if (recipe) {
       recipe.description = description;
       await recipe.save();

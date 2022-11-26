@@ -5,6 +5,8 @@ import { AddItemToRecipeDto } from "./dto/add-item-to-recipe";
 import { EditRecipeDto } from "./dto/edit-name-recipe";
 import { EditDescriptionRecipeDto } from "./dto/edit-description-recipe";
 import { AuthGuard } from "@nestjs/passport";
+import { UserObj } from "../decorators/user-obj.decorator";
+import { User } from "../user/user.entity";
 
 @Controller("recipe")
 export class RecipeController {
@@ -18,8 +20,8 @@ export class RecipeController {
 
   @UseGuards(AuthGuard("jwt"))
   @Get("/user/:recipeId")
-  getOneRecipe(@Param("recipeId") recipeId: string) {
-    return this.recipeService.getOneRecipe(recipeId);
+  getOneRecipe(@UserObj() user: User, @Param("recipeId") recipeId: string) {
+    return this.recipeService.getOneRecipe(recipeId, user.id);
   }
 
   @UseGuards(AuthGuard("jwt"))
@@ -30,25 +32,25 @@ export class RecipeController {
 
   @UseGuards(AuthGuard("jwt"))
   @Post("/add-item")
-  addItemToRecipe(@Body() recipe: AddItemToRecipeDto) {
-    return this.recipeService.addItemToRecipe(recipe);
+  addItemToRecipe(@UserObj() user: User, @Body() recipe: AddItemToRecipeDto) {
+    return this.recipeService.addItemToRecipe(recipe, user.id);
   }
 
   @UseGuards(AuthGuard("jwt"))
   @Patch("/edit")
-  editNamedRecipe(@Body() recipe: EditRecipeDto) {
-    return this.recipeService.editNamedRecipe(recipe);
+  editNamedRecipe(@UserObj() user: User, @Body() recipe: EditRecipeDto) {
+    return this.recipeService.editNamedRecipe(recipe, user.id);
   }
 
   @UseGuards(AuthGuard("jwt"))
   @Patch("/edit-description")
-  editDescriptionRecipe(@Body() recipe: EditDescriptionRecipeDto) {
-    return this.recipeService.editDescriptionRecipe(recipe);
+  editDescriptionRecipe(@UserObj() user: User, @Body() recipe: EditDescriptionRecipeDto) {
+    return this.recipeService.editDescriptionRecipe(recipe, user.id);
   }
 
   @UseGuards(AuthGuard("jwt"))
   @Delete("/:recipeId")
-  deleteRecipe(@Param("recipeId") recipeId: string) {
-    return this.recipeService.deleteRecipe(recipeId);
+  deleteRecipe(@UserObj() user: User, @Param("recipeId") recipeId: string) {
+    return this.recipeService.deleteRecipe(recipeId, user.id);
   }
 }
