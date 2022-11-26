@@ -31,10 +31,6 @@ export class UserService {
     }
   }
 
-  async getOneUser(id: string): Promise<User> {
-    return await User.findOne({ where: { id } });
-  }
-
   async changePassword(newPwd: ChangePasswordDto, user: User): Promise<ChangePasswordResponse> {
     if (user.pwdHash != hashPwd(newPwd.pwd, user.salz)) {
       return { isSuccess: false };

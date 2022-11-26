@@ -26,8 +26,8 @@ export class RecipeController {
 
   @UseGuards(AuthGuard("jwt"))
   @Post("/")
-  createRecipe(@Body() recipe: CreateRecipeDto) {
-    return this.recipeService.createRecipe(recipe);
+  createRecipe(@UserObj() user: User, @Body() recipe: CreateRecipeDto) {
+    return this.recipeService.createRecipe(recipe, user);
   }
 
   @UseGuards(AuthGuard("jwt"))

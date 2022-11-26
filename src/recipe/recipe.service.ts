@@ -4,18 +4,16 @@ import { CreateRecipeDto } from "./dto/create-recipe";
 import { AddItemToRecipe, CreateRecipeResponse, DeleteRecipeResponse, EditNameRecipeResponse, GetRecipesResponse } from "../interfaces";
 import { ListService } from "src/list/list.service";
 import { AddItemToRecipeDto } from "./dto/add-item-to-recipe";
-import { UserService } from "../user/user.service";
 import { EditRecipeDto } from "./dto/edit-name-recipe";
 import { EditDescriptionRecipeDto } from "./dto/edit-description-recipe";
 import { ILike } from "typeorm";
+import { User } from "../user/user.entity";
 
 @Injectable()
 export class RecipeService {
-  constructor(@Inject(forwardRef(() => ListService)) private listService: ListService, @Inject(forwardRef(() => UserService)) private userService: UserService) {}
+  constructor(@Inject(forwardRef(() => ListService)) private listService: ListService) {}
 
-  async createRecipe(recipe: CreateRecipeDto): Promise<CreateRecipeResponse> {
-    const user = await this.userService.getOneUser(recipe.userId);
-    if (!user) return { isSuccess: false };
+  async createRecipe(recipe: CreateRecipeDto, user: User): Promise<CreateRecipeResponse> {
     const checkName = await this.hasRecipe(recipe.userId, recipe.name);
     if (!checkName) {
       const newRecipe = new Recipe();

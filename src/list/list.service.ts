@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { List } from "./list.entity";
 import { CreateListDto } from "./dto/create-list";
 import { AddRecipeToListResponse, CreateListResponse, DeleteListResponse, EditListResponse } from "../interfaces";
@@ -8,17 +8,12 @@ import { ProductService } from "../product/product.service";
 import { ItemInList } from "./item-in-list.entity";
 import { UpdateItemsListDto } from "./dto/update-item-in-list";
 import { RecipeService } from "../recipe/recipe.service";
-import { UserService } from "../user/user.service";
 import { ILike } from "typeorm";
 import { User } from "../user/user.entity";
 
 @Injectable()
 export class ListService {
-  constructor(
-    @Inject(forwardRef(() => ProductService)) private productService: ProductService,
-    @Inject(forwardRef(() => RecipeService)) private recipeService: RecipeService,
-    @Inject(forwardRef(() => UserService)) private userService: UserService,
-  ) {}
+  constructor(@Inject(ProductService) private productService: ProductService, @Inject(RecipeService) private recipeService: RecipeService) {}
 
   async hasList(userId: string, name: string): Promise<boolean> {
     const list = await List.find({
