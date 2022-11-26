@@ -9,6 +9,8 @@ import { ItemInList } from "./item-in-list.entity";
 import { UpdateItemsListDto } from "./dto/update-item-in-list";
 import { RecipeService } from "../recipe/recipe.service";
 import { UserService } from "../user/user.service";
+import { ILike } from "typeorm";
+import { User } from "../user/user.entity";
 
 @Injectable()
 export class ListService {
@@ -18,24 +20,32 @@ export class ListService {
     @Inject(forwardRef(() => UserService)) private userService: UserService,
   ) {}
 
+  async hasList(userId: string, name: string): Promise<boolean> {
+    const list = await List.find({
+      where: {
+        user: { id: userId },
+        listName: ILike(name),
+      },
+    });
+    return list.length > 0;
+  }
+
   async getUserLists(userId: string): Promise<List[]> {
     return await List.find({ where: { user: { id: userId } } });
   }
 
-  async getList(listId: string): Promise<List> {
+  async getList(listId: string, userId: string): Promise<List> {
     return await List.findOne({
-      where: { id: listId },
+      where: {
+        id: listId,
+        user: { id: userId },
+      },
       relations: ["items", "recipes", "recipes.items"],
     });
   }
 
-  async hasList(userId: string, name: string): Promise<boolean> {
-    return (await this.getUserLists(userId)).some(list => list.listName.toLowerCase() === name.toLowerCase());
-  }
-
-  async createList(list: CreateListDto): Promise<CreateListResponse> {
+  async createList(list: CreateListDto, user: User): Promise<CreateListResponse> {
     const newList = new List();
-    const user = await this.userService.getOneUser(list.userId);
     if (!user) return { isSuccess: false };
     const checkName = await this.hasList(user.id, list.listName);
     if (!checkName) {
@@ -49,12 +59,9 @@ export class ListService {
     } else return { isSuccess: false };
   }
 
-  async deleteList(listId: string): Promise<DeleteListResponse> {
-    const list = await this.getList(listId);
+  async deleteList(listId: string, userId: string): Promise<DeleteListResponse> {
+    const list = await this.getList(listId, userId);
     if (list) {
-      // for (const item of list.items) {
-      //     await item.remove();
-      // }
       await list.remove();
       return {
         isSuccess: true,
@@ -65,9 +72,9 @@ export class ListService {
       };
   }
 
-  async editList(listId: string, list: CreateListDto): Promise<EditListResponse> {
+  async editList(listId: string, list: CreateListDto, userId: string): Promise<EditListResponse> {
     const { listName } = list;
-    const check = await this.hasList(list.userId, listName);
+    const check = await this.hasList(userId, listName);
     if (!check) {
       const { affected } = await List.update(listId, {
         listName,
@@ -81,10 +88,10 @@ export class ListService {
     };
   }
 
-  async addItemToList(item: CreateItemInListDto): Promise<AddItemtoListResponse> {
+  async addItemToList(item: CreateItemInListDto, userId: string): Promise<AddItemtoListResponse> {
     const newItem = await this.createItem(item);
     if (item.listId && newItem) {
-      const list = await this.getList(item.listId);
+      const list = await this.getList(item.listId, userId);
       list.items.push(newItem);
       await list.save();
       return {
@@ -106,12 +113,8 @@ export class ListService {
   }
 
   // service Items in list
-  async getListOfItems(userId: string): Promise<ItemInList[]> {
-    return await ItemInList.find({ where: { product: { user: { id: userId } } } });
-  }
-
-  async getItemInList(id: string): Promise<ItemInList> {
-    return await ItemInList.findOne({ where: { id } });
+  async getItemInList(id: string, userId: string): Promise<ItemInList> {
+    return await ItemInList.findOne({ where: { id, product: { user: { id: userId } } } });
   }
 
   async createItem(item: CreateItemInListDto): Promise<ItemInList> {
@@ -128,8 +131,12 @@ export class ListService {
     }
   }
 
-  async updateItemInList(itemId: string, newItem: UpdateItemsListDto): Promise<UpdateItemInListResponse> {
-    const item = await this.getItemInList(itemId);
+  async getListOfItems(userId: string): Promise<ItemInList[]> {
+    return await ItemInList.find({ where: { product: { user: { id: userId } } } });
+  }
+
+  async updateItemInList(itemId: string, newItem: UpdateItemsListDto, userId: string): Promise<UpdateItemInListResponse> {
+    const item = await this.getItemInList(itemId, userId);
     if (item) {
       item.count = newItem.count;
       item.weight = newItem.weight;
@@ -144,8 +151,8 @@ export class ListService {
     }
   }
 
-  async deleteItemInList(itemId: string) {
-    const item = await this.getItemInList(itemId);
+  async deleteItemInList(itemId: string, userId: string) {
+    const item = await this.getItemInList(itemId, userId);
     if (item) {
       await item.remove();
       return { isSuccess: true };
@@ -154,8 +161,8 @@ export class ListService {
     }
   }
 
-  async clearList(listId: string) {
-    const list = await this.getList(listId);
+  async clearList(listId: string, userId: string) {
+    const list = await this.getList(listId, userId);
     if (list) {
       for (const item of list.items) {
         await item.remove();
@@ -167,8 +174,8 @@ export class ListService {
     }
   }
 
-  async addRecipeToList(listId: string, recipeId: string): Promise<AddRecipeToListResponse> {
-    const list = await this.getList(listId);
+  async addRecipeToList(listId: string, recipeId: string, userId: string): Promise<AddRecipeToListResponse> {
+    const list = await this.getList(listId, userId);
     const recipe = await this.recipeService.getOneRecipe(recipeId);
     if (list && recipe) {
       list.recipes.push(recipe);
@@ -177,8 +184,8 @@ export class ListService {
     } else return { isSuccess: false };
   }
 
-  async deleteRecipeFromList(listId: string, recipeId: string) {
-    const list = await this.getList(listId);
+  async deleteRecipeFromList(listId: string, recipeId: string, userId: string) {
+    const list = await this.getList(listId, userId);
     if (list) {
       list.recipes = list.recipes.filter(recipeInList => {
         return recipeInList.id !== recipeId;
@@ -188,8 +195,8 @@ export class ListService {
     } else return { isSuccess: false };
   }
 
-  async addToBasket(itemId: string) {
-    const item = await this.getItemInList(itemId);
+  async addToBasket(itemId: string, userId: string) {
+    const item = await this.getItemInList(itemId, userId);
     if (item) {
       item.itemInBasket = true;
       await item.save();
@@ -199,8 +206,8 @@ export class ListService {
     }
   }
 
-  async removeFromBasket(itemId: string) {
-    const item = await this.getItemInList(itemId);
+  async removeFromBasket(itemId: string, userId: string) {
+    const item = await this.getItemInList(itemId, userId);
     if (item) {
       item.itemInBasket = false;
       await item.save();
@@ -210,10 +217,10 @@ export class ListService {
     }
   }
 
-  async clearBasket(listId: string) {
-    const list = await this.getList(listId);
+  async clearBasket(listId: string, userId: string) {
+    const list = await this.getList(listId, userId);
     if (list) {
-      for await (const item of list.items) {
+      for (const item of list.items) {
         item.itemInBasket = false;
         await item.save();
       }
@@ -223,7 +230,6 @@ export class ListService {
           await item.save();
         }
       }
-      console.log(list.recipes[0].items);
       return { isSuccess: true };
     } else {
       return { isSuccess: false };

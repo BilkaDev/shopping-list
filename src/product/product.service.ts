@@ -8,6 +8,16 @@ import { ILike } from "typeorm";
 
 @Injectable()
 export class ProductService {
+  async hasProducts(userId: string, name: string): Promise<boolean> {
+    const products = await Product.find({
+      where: {
+        user: { id: userId },
+        name: ILike(name),
+      },
+    });
+    return products.length > 0;
+  }
+
   async getUserProducts(userId: string): Promise<ProductListResponse> {
     const products = await Product.find({
       where: {
@@ -22,16 +32,6 @@ export class ProductService {
 
   async getProduct(productId: string): Promise<Product> {
     return await Product.findOne({ where: { id: productId } });
-  }
-
-  async hasProducts(userId: string, name: string): Promise<boolean> {
-    const products = await Product.find({
-      where: {
-        user: { id: userId },
-        name: ILike(name),
-      },
-    });
-    return products.length > 0;
   }
 
   async addProduct(product: CreateProductDto, user: User): Promise<AddProductResponse> {
