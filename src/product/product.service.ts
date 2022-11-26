@@ -4,6 +4,7 @@ import { AddProductResponse, DeleteProductResponse, ProductListResponse, UpdateP
 import { CreateProductDto } from "./dto/create-product";
 import { User } from "../user/user.entity";
 import { UpdateProductDto } from "./dto/update-product";
+import { ILike } from "typeorm";
 
 @Injectable()
 export class ProductService {
@@ -24,12 +25,19 @@ export class ProductService {
   }
 
   async hasProducts(userId: string, name: string): Promise<boolean> {
-    return (await this.getUserProducts(userId)).products.some(product => product.name.toLowerCase() === name.toLowerCase());
+    const products = await Product.find({
+      where: {
+        user: { id: userId },
+        name: ILike(name),
+      },
+    });
+    return products.length > 0;
   }
 
   async addProduct(product: CreateProductDto, user: User): Promise<AddProductResponse> {
     const { name, category } = product;
     const productItem = await this.hasProducts(user.id, name);
+    console.log(productItem);
     if (productItem) {
       return { isSuccess: false };
     }
