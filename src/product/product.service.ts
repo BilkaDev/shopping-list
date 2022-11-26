@@ -37,7 +37,6 @@ export class ProductService {
   async addProduct(product: CreateProductDto, user: User): Promise<AddProductResponse> {
     const { name, category } = product;
     const productItem = await this.hasProducts(user.id, name);
-    console.log(productItem);
     if (productItem) {
       return { isSuccess: false };
     }
