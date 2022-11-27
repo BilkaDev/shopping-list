@@ -25,7 +25,6 @@ export class ProductService {
       },
     });
     return {
-      isSuccess: true,
       products,
     };
   }

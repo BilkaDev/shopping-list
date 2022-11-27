@@ -30,7 +30,6 @@ export type DeleteProductResponse = {
 };
 
 export type ProductListResponse = {
-  isSuccess: true;
   products: ProductInterface[];
 };
 
