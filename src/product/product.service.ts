@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { Product } from "./product.entity";
 import { AddProductResponse, DeleteProductResponse, ProductListResponse, UpdateProductResponse } from "../interfaces";
 import { CreateProductDto } from "./dto/create-product";
@@ -30,14 +30,18 @@ export class ProductService {
   }
 
   async getProduct(productId: string): Promise<Product> {
-    return await Product.findOne({ where: { id: productId } });
+    const product = await Product.findOne({ where: { id: productId } });
+    if (!product) {
+      throw new NotFoundException("Product does not exist.");
+    }
+    return product;
   }
 
   async addProduct(product: CreateProductDto, user: User): Promise<AddProductResponse> {
     const { name, category } = product;
     const productItem = await this.hasProducts(user.id, name);
     if (productItem) {
-      return { isSuccess: false };
+      throw new BadRequestException("The given product name is taken");
     }
     const newProduct = new Product();
     newProduct.name = name;
@@ -47,7 +51,6 @@ export class ProductService {
     await newProduct.save();
     return {
       id: newProduct.id,
-      isSuccess: true,
     };
   }
 
@@ -58,10 +61,9 @@ export class ProductService {
       return {
         isSuccess: true,
       };
-    } else
-      return {
-        isSuccess: false,
-      };
+    } else {
+      throw new NotFoundException("Product does not exist.");
+    }
   }
 
   async updateProduct(productId: string, userId: string, updateProduct: UpdateProductDto): Promise<UpdateProductResponse> {

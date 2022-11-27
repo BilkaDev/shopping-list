@@ -16,14 +16,9 @@ export enum ProductCategory {
   "Candy",
 }
 
-export type AddProductResponse =
-  | {
-      isSuccess: true;
-      id: string;
-    }
-  | {
-      isSuccess: false;
-    };
+export type AddProductResponse = {
+  id: string;
+};
 
 export type DeleteProductResponse = {
   isSuccess: boolean;
