@@ -13,26 +13,20 @@ export interface ItemInListInterface {
   recipeId?: string;
 }
 
-export type AddItemtoListResponse =
-  | {
-      isSuccess: true;
-      id: string;
-    }
-  | {
-      isSuccess: false;
-    };
+export type AddItemToListResponse = {
+  id: string;
+};
 
 export type DeleteItemInListResponse = {
-  isSuccess: boolean;
+  message: string;
 };
 export type UpdateItemInListResponse = DeleteItemInListResponse;
 export type GetListOfItemsResponse = {
   items: ItemInList[];
 };
-export type GetItemInList = ItemInListInterface;
-export type CreateItemInListRequest = CreateItemInListDto;
 
+export type CreateItemInListRequest = CreateItemInListDto;
 export type UpdateItemInListRequest = UpdateItemsListDto;
-export type AddToBasketResponse = { isSuccess: boolean };
-export type RemoveFromBasketResponse = { isSuccess: boolean };
-export type ClearBasketResponse = { isSuccess: boolean };
+export type AddToBasketResponse = DeleteItemInListResponse;
+export type RemoveFromBasketResponse = DeleteItemInListResponse;
+export type ClearBasketResponse = DeleteItemInListResponse;

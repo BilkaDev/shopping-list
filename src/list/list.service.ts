@@ -1,9 +1,23 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { List } from "./list.entity";
 import { CreateListDto } from "./dto/create-list";
-import { AddRecipeToListResponse, CreateListResponse, DeleteListResponse, EditListResponse, GetListOfItemsResponse, GetListResponse, GetListsResponse } from "../interfaces";
+import {
+  AddRecipeToListResponse,
+  AddToBasketResponse,
+  ClearBasketResponse,
+  ClearListResponse,
+  CreateListResponse,
+  DeleteItemInListResponse,
+  DeleteListResponse,
+  DeleteRecipeFromListResponse,
+  EditListResponse,
+  GetListOfItemsResponse,
+  GetListResponse,
+  GetListsResponse,
+  RemoveFromBasketResponse,
+} from "../interfaces";
 import { CreateItemInListDto } from "./dto/create-item-in-list";
-import { AddItemtoListResponse, UpdateItemInListResponse } from "../interfaces";
+import { AddItemToListResponse, UpdateItemInListResponse } from "../interfaces";
 import { ProductService } from "../product/product.service";
 import { ItemInList } from "./item-in-list.entity";
 import { UpdateItemsListDto } from "./dto/update-item-in-list";
@@ -46,30 +60,23 @@ export class ListService {
 
   async createList(list: CreateListDto, user: User): Promise<CreateListResponse> {
     const newList = new List();
-    if (!user) return { isSuccess: false };
     const checkName = await this.hasList(user.id, list.listName);
     if (!checkName) {
       newList.listName = list.listName;
       newList.user = user;
       await newList.save();
       return {
-        isSuccess: true,
         id: newList.id,
       };
-    } else return { isSuccess: false };
+    } else throw new BadRequestException("The given list name is taken");
   }
 
   async deleteList(listId: string, userId: string): Promise<DeleteListResponse> {
     const list = await this.getList(listId, userId);
     if (list) {
       await list.remove();
-      return {
-        isSuccess: true,
-      };
-    } else
-      return {
-        isSuccess: false,
-      };
+      return { message: "List was deleted successfully!" };
+    } else throw new NotFoundException("List does not exist.");
   }
 
   async editList(listId: string, list: CreateListDto, userId: string): Promise<EditListResponse> {
@@ -79,23 +86,19 @@ export class ListService {
       const { affected } = await List.update(listId, {
         listName,
       });
-      if (affected) {
-        return { isSuccess: true };
-      }
+      if (affected) return { message: "List has been updated!" };
     }
-    return {
-      isSuccess: false,
-    };
+    throw new BadRequestException("The given name is already taken.");
   }
 
-  async addItemToList(item: CreateItemInListDto, userId: string): Promise<AddItemtoListResponse> {
+  // service Items in list
+  async addItemToList(item: CreateItemInListDto, userId: string): Promise<AddItemToListResponse> {
     const newItem = await this.createItem(item);
     if (item.listId && newItem) {
       const list = await this.getList(item.listId, userId);
       list.items.push(newItem);
       await list.save();
       return {
-        isSuccess: true,
         id: newItem.id,
       };
     } else if (item.recipeId && newItem) {
@@ -103,16 +106,11 @@ export class ListService {
       recipe.items.push(newItem);
       await recipe.save();
       return {
-        isSuccess: true,
         id: newItem.id,
       };
-    } else
-      return {
-        isSuccess: false,
-      };
+    } else throw new Error("Sorry please try again later.");
   }
 
-  // service Items in list
   async getItemInList(id: string, userId: string): Promise<ItemInList> {
     return await ItemInList.findOne({ where: { id, product: { user: { id: userId } } } });
   }
@@ -144,81 +142,71 @@ export class ListService {
       item.product.category = newItem.category;
       await item.product.save();
       await item.save();
-      return {
-        isSuccess: true,
-      };
-    } else {
-      return { isSuccess: false };
-    }
+      return { message: "Product has been updated!" };
+    } else throw new NotFoundException("Product does not exist.");
   }
 
-  async deleteItemInList(itemId: string, userId: string) {
+  async deleteItemInList(itemId: string, userId: string): Promise<DeleteItemInListResponse> {
     const item = await this.getItemInList(itemId, userId);
     if (item) {
       await item.remove();
-      return { isSuccess: true };
-    } else {
-      return { isSuccess: false };
-    }
+      return { message: "Product has been remove!" };
+    } else throw new NotFoundException("Product does not exist.");
   }
 
-  async clearList(listId: string, userId: string) {
+  async clearList(listId: string, userId: string): Promise<ClearListResponse> {
     const list = await this.getList(listId, userId);
     if (list) {
       for (const item of list.items) {
         await item.remove();
       }
       await list.save();
-      return { isSuccess: true };
-    } else {
-      return { isSuccess: false };
-    }
+      return { message: "List has been cleared!" };
+    } else throw new NotFoundException("List does not exist.");
   }
 
   async addRecipeToList(listId: string, recipeId: string, userId: string): Promise<AddRecipeToListResponse> {
     const list = await this.getList(listId, userId);
+    if (!list) throw new NotFoundException("List does not exist.");
+
     const recipe = await this.recipeService.getOneRecipe(recipeId, userId);
-    if (list && recipe) {
-      list.recipes.push(recipe);
-      await list.save();
-      return { isSuccess: true };
-    } else return { isSuccess: false };
+    if (!recipe) throw new NotFoundException("Recipe does not exist.");
+
+    list.recipes.push(recipe);
+    await list.save();
+    return { message: "Recipe has been added!" };
   }
 
-  async deleteRecipeFromList(listId: string, recipeId: string, userId: string) {
+  async deleteRecipeFromList(listId: string, recipeId: string, userId: string): Promise<DeleteRecipeFromListResponse> {
     const list = await this.getList(listId, userId);
     if (list) {
       list.recipes = list.recipes.filter(recipeInList => {
         return recipeInList.id !== recipeId;
       });
       await list.save();
-      return { isSuccess: true };
-    } else return { isSuccess: false };
+      return { message: "Recipe has been remove!" };
+    } else throw new NotFoundException("List does not exist.");
   }
 
-  async addToBasket(itemId: string, userId: string) {
+  async addToBasket(itemId: string, userId: string): Promise<AddToBasketResponse> {
     const item = await this.getItemInList(itemId, userId);
     if (item) {
       item.itemInBasket = true;
       await item.save();
-      return { isSuccess: true };
-    } else {
-      return { isSuccess: false };
-    }
+      return { message: "Product added to basket" };
+    } else throw new NotFoundException("Product does not exist.");
   }
 
-  async removeFromBasket(itemId: string, userId: string) {
+  async removeFromBasket(itemId: string, userId: string): Promise<RemoveFromBasketResponse> {
     const item = await this.getItemInList(itemId, userId);
     if (item) {
       item.itemInBasket = false;
       await item.save();
-      return { isSuccess: true };
-    } else {
-      return { isSuccess: false };
-    }
+      return { message: "Product remove from basket" };
+    } else throw new NotFoundException("Product does not exist.");
   }
 
-  async clearBasket(listId: string, userId: string) {
+  async clearBasket(listId: string, userId: string): Promise<ClearBasketResponse> {
     const list = await this.getList(listId, userId);
     if (list) {
       for (const item of list.items) {
@@ -231,9 +219,7 @@ export class ListService {
           await item.save();
         }
       }
-      return { isSuccess: true };
-    } else {
-      return { isSuccess: false };
-    }
+      return { message: "Basket is empty." };
+    } else throw new NotFoundException("List does not exist.");
   }
 }
