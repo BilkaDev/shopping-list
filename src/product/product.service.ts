@@ -24,46 +24,35 @@ export class ProductService {
         user: { id: userId },
       },
     });
-    return {
-      products,
-    };
+    return { products };
   }
 
   async getProduct(productId: string): Promise<Product> {
     const product = await Product.findOne({ where: { id: productId } });
-    if (!product) {
-      throw new NotFoundException("Product does not exist.");
-    }
+    if (!product) throw new NotFoundException("Product does not exist.");
     return product;
   }
 
   async addProduct(product: CreateProductDto, user: User): Promise<AddProductResponse> {
     const { name, category } = product;
     const productItem = await this.hasProducts(user.id, name);
-    if (productItem) {
-      throw new BadRequestException("The given product name is taken");
-    }
+    if (productItem) throw new BadRequestException("The given product name is taken");
+
     const newProduct = new Product();
     newProduct.name = name;
     newProduct.category = category;
     newProduct.user = user;
 
     await newProduct.save();
-    return {
-      product: { id: newProduct.id },
-    };
+    return { product: { id: newProduct.id } };
   }
 
   async deleteProduct(productId: string): Promise<DeleteProductResponse> {
     const item = await this.getProduct(productId);
     if (item) {
       await item.remove();
-      return {
-        message: "Product was deleted successfully!",
-      };
-    } else {
-      throw new NotFoundException("Product does not exist.");
-    }
+      return { message: "Product was deleted successfully!" };
+    } else throw new NotFoundException("Product does not exist.");
   }
 
   async updateProduct(productId: string, userId: string, updateProduct: UpdateProductDto): Promise<UpdateProductResponse> {
@@ -76,9 +65,7 @@ export class ProductService {
         name,
         category,
       });
-      if (affected) {
-        return { message: "Product has been updated!" };
-      }
+      if (affected) return { message: "Product has been updated!" };
     }
     throw new BadRequestException("The given name is already taken.");
   }
