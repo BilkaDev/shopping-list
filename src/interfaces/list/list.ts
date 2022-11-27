@@ -9,6 +9,8 @@ export interface ListInterface {
   recipes: RecipeInterface[];
 }
 
+export type Lists = Omit<ListInterface, "items" | "recipes">[];
+
 export type CreateListResponse =
   | {
       isSuccess: true;
@@ -24,7 +26,9 @@ export type DeleteListResponse = {
 export type AddRecipeToListResponse = DeleteListResponse;
 export type DeleteRecipeFromListResponse = DeleteListResponse;
 export type EditListResponse = DeleteListResponse;
-export type GetListsResponse = Omit<ListInterface[], "items">;
+export type GetListsResponse = {
+  lists: Lists;
+};
 export type GetListResponse = ListInterface;
 
 export type CreateListRequest = CreateListDto;
