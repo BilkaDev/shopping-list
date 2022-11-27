@@ -1,6 +1,6 @@
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
-import { BadRequestException, ValidationError, ValidationPipe } from "@nestjs/common";
+import { ValidationPipe } from "@nestjs/common";
 import { GlobalExceptionFilter } from "./filters/global-exception.filter";
 import * as cookieParser from "cookie-parser";
 import { ApiTransformInterceptor } from "./interceptors/api-transform.interceptors";
@@ -21,9 +21,6 @@ async function bootstrap() {
       transformOptions: { enableImplicitConversion: true },
       transform: true,
       forbidUnknownValues: true,
-      exceptionFactory: (errors: ValidationError[]) => {
-        return new BadRequestException("Validation error..");
-      },
     }),
   );
 

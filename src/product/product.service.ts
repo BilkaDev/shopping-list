@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { Product } from "./product.entity";
 import { AddProductResponse, DeleteProductResponse, ProductListResponse, UpdateProductResponse } from "../interfaces";
 import { CreateProductDto } from "./dto/create-product";
@@ -78,8 +78,6 @@ export class ProductService {
         return { isSuccess: true };
       }
     }
-    return {
-      isSuccess: false,
-    };
+    throw new BadRequestException("The given name is already taken.");
   }
 }
