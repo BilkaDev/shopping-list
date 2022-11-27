@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { List } from "./list.entity";
 import { CreateListDto } from "./dto/create-list";
-import { AddRecipeToListResponse, CreateListResponse, DeleteListResponse, EditListResponse, GetListsResponse } from "../interfaces";
+import { AddRecipeToListResponse, CreateListResponse, DeleteListResponse, EditListResponse, GetListOfItemsResponse, GetListResponse, GetListsResponse } from "../interfaces";
 import { CreateItemInListDto } from "./dto/create-item-in-list";
 import { AddItemtoListResponse, UpdateItemInListResponse } from "../interfaces";
 import { ProductService } from "../product/product.service";
@@ -28,6 +28,10 @@ export class ListService {
   async getUserLists(userId: string): Promise<GetListsResponse> {
     const lists = await List.find({ where: { user: { id: userId } } });
     return { lists };
+  }
+  async getListResponse(listId: string, userId: string): Promise<GetListResponse> {
+    const list = await this.getList(listId, userId);
+    return { list };
   }
 
   async getList(listId: string, userId: string): Promise<List> {
@@ -127,8 +131,9 @@ export class ListService {
     }
   }
 
-  async getListOfItems(userId: string): Promise<ItemInList[]> {
-    return await ItemInList.find({ where: { product: { user: { id: userId } } } });
+  async getListOfItems(userId: string): Promise<GetListOfItemsResponse> {
+    const itemsList = await ItemInList.find({ where: { product: { user: { id: userId } } } });
+    return { items: itemsList };
   }
 
   async updateItemInList(itemId: string, newItem: UpdateItemsListDto, userId: string): Promise<UpdateItemInListResponse> {

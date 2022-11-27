@@ -1,6 +1,7 @@
 import { CreateItemInListDto } from "../../list/dto/create-item-in-list";
 import { ProductInterface } from "../product";
 import { UpdateItemsListDto } from "../../list/dto/update-item-in-list";
+import { ItemInList } from "../../list/item-in-list.entity";
 
 export interface ItemInListInterface {
   id: string;
@@ -25,7 +26,9 @@ export type DeleteItemInListResponse = {
   isSuccess: boolean;
 };
 export type UpdateItemInListResponse = DeleteItemInListResponse;
-export type GetListOfItemsResponse = ItemInListInterface[];
+export type GetListOfItemsResponse = {
+  items: ItemInList[];
+};
 export type GetItemInList = ItemInListInterface;
 export type CreateItemInListRequest = CreateItemInListDto;
 

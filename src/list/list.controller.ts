@@ -26,7 +26,7 @@ export class ListController {
   @UseGuards(AuthGuard("jwt"))
   @Get("/user/:listId")
   getList(@UserObj() user: User, @Param("listId") listId: string) {
-    return this.listService.getList(listId, user.id);
+    return this.listService.getListResponse(listId, user.id);
   }
 
   @UseGuards(AuthGuard("jwt"))

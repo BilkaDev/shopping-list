@@ -29,6 +29,9 @@ export type EditListResponse = DeleteListResponse;
 export type GetListsResponse = {
   lists: Lists;
 };
-export type GetListResponse = ListInterface;
+
+export type GetListResponse = {
+  list: ListInterface;
+};
 
 export type CreateListRequest = CreateListDto;
