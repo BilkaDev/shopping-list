@@ -50,7 +50,7 @@ export class ProductService {
 
     await newProduct.save();
     return {
-      id: newProduct.id,
+      product: { id: newProduct.id },
     };
   }
 
@@ -59,7 +59,7 @@ export class ProductService {
     if (item) {
       await item.remove();
       return {
-        isSuccess: true,
+        message: "Product was deleted successfully!",
       };
     } else {
       throw new NotFoundException("Product does not exist.");
@@ -77,7 +77,7 @@ export class ProductService {
         category,
       });
       if (affected) {
-        return { isSuccess: true };
+        return { message: "Product has been updated!" };
       }
     }
     throw new BadRequestException("The given name is already taken.");

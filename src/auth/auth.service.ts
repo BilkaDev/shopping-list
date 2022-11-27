@@ -45,15 +45,15 @@ export class AuthService {
   async login(req: AuthLoginDto, res: Response) {
     try {
       if (!req.email.includes("@")) {
-        return res.json({
-          isSuccess: false,
+        return res.status(400).json({
+          status: 400,
           message: "Wrong e-mail.",
         });
       }
 
       if (req.pwd.length < 6) {
-        return res.json({
-          isSuccess: false,
+        return res.status(400).json({
+          status: 400,
           message: "The password must not be shorter than 6 characters",
         });
       }
@@ -65,16 +65,16 @@ export class AuthService {
       });
 
       if (!user) {
-        return res.json({
-          isSuccess: false,
+        return res.status(404).json({
+          status: 404,
           message: "Incorrect login credentials!",
         });
       }
 
       const password = hashPwd(req.pwd, user.salz);
       if (user.pwdHash !== password) {
-        return res.json({
-          isSuccess: false,
+        return res.status(404).json({
+          status: 404,
           message: "Incorrect login credentials!",
         });
       }
@@ -88,13 +88,17 @@ export class AuthService {
           httpOnly: true,
         })
         .json({
-          isSuccess: true,
-          userId: user.id,
-          email: user.email,
+          status: 200,
+          data: {
+            user: {
+              userId: user.id,
+              email: user.email,
+            },
+          },
         });
     } catch (e) {
-      return res.json({
-        isSuccess: false,
+      return res.status(500).json({
+        status: 500,
         message: e.message,
       });
     }
@@ -113,8 +117,8 @@ export class AuthService {
 
       return res.json({ isSuccess: true });
     } catch (e) {
-      return res.json({
-        isSuccess: false,
+      return res.status(500).json({
+        status: 500,
         error: e.message,
       });
     }
@@ -129,9 +133,8 @@ export class AuthService {
         httpOnly: true,
       })
       .json({
-        isSuccess: true,
-        userId: user.id,
-        email: user.email,
+        status: 200,
+        data: { user: { userId: user.id, email: user.email } },
       });
   }
 }

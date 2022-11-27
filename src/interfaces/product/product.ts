@@ -17,18 +17,17 @@ export enum ProductCategory {
 }
 
 export type AddProductResponse = {
-  id: string;
+  product: { id: string };
 };
 
 export type DeleteProductResponse = {
-  isSuccess: boolean;
+  message: string;
 };
 
 export type ProductListResponse = {
   products: ProductInterface[];
 };
 
-export type GetProductResponse = ProductInterface;
 export type UpdateProductResponse = DeleteProductResponse;
 
 export type CreateProductRequest = CreateProductDto;
