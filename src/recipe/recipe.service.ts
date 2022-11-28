@@ -28,7 +28,7 @@ export class RecipeService {
       id: recipe.id,
     }));
   async createRecipe(recipe: CreateRecipeDto, user: User): Promise<CreateRecipeResponse> {
-    const checkName = await this.hasRecipe(recipe.userId, recipe.name);
+    const checkName = await this.noRecipeNameOrFail(recipe.userId, recipe.name);
     if (!checkName) {
       const newRecipe = new Recipe();
       newRecipe.items = [];
@@ -48,14 +48,15 @@ export class RecipeService {
     } else throw new BadRequestException("The given recipe name is taken");
   }
 
-  async hasRecipe(userId: string, name: string) {
-    const recipe = await Recipe.find({
+  async noRecipeNameOrFail(userId: string, name: string): Promise<boolean> {
+    const recipe = await Recipe.findOne({
       where: {
         name: ILike(name),
         user: { id: userId },
       },
     });
-    return recipe.length > 0;
+    if (!recipe) throw new BadRequestException("The given name is already taken.");
+    return true;
   }
 
   async getUserRecipes(userId: string): Promise<GetRecipesResponse> {
@@ -72,7 +73,7 @@ export class RecipeService {
       where: { id: recipeId, user: { id: userId } },
       relations: ["items"],
     });
-    if (recipe === null) {
+    if (!recipe) {
       throw new NotFoundException("Cannot find recipe.");
     }
     return recipe;
@@ -97,28 +98,22 @@ export class RecipeService {
 
   async editNamedRecipe({ id, name }: EditRecipeDto, userId: string): Promise<EditNameRecipeResponse> {
     const recipe = await this.getOneRecipe(id, userId);
-    const checkName = await this.hasRecipe(userId, name);
-    if (!checkName) {
-      recipe.name = name;
-      await recipe.save();
-      return { message: "Recipe has been updated!" };
-    } else throw new BadRequestException("The given name is already taken.");
+    await this.noRecipeNameOrFail(userId, name);
+    recipe.name = name;
+    await recipe.save();
+    return { message: "Recipe has been updated!" };
   }
 
   async deleteRecipe(recipeId: string, userId: string): Promise<DeleteRecipeResponse> {
     const recipe = await this.getOneRecipe(recipeId, userId);
-    if (recipe) {
-      await recipe.remove();
-      return { message: "Recipe has been remove!" };
-    } else throw new NotFoundException("Recipe does not exist.");
+    await recipe.remove();
+    return { message: "Recipe has been remove!" };
   }
 
   editDescriptionRecipe = async ({ description, id }: EditDescriptionRecipeDto, userId: string): Promise<EditDescriptionRecipeResponse> => {
     const recipe = await this.getOneRecipe(id, userId);
-    if (recipe) {
-      recipe.description = description;
-      await recipe.save();
-      return { message: "Recipe has been update!" };
-    } else throw new NotFoundException("Recipe does not exist.");
+    recipe.description = description;
+    await recipe.save();
+    return { message: "Recipe has been update!" };
   };
 }

@@ -11,9 +11,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     console.error(exception?.message);
     console.error(exception);
     if (status === 500) {
-      return response.json({
+      return response.status(500).json({
         status,
-        message: "Please try again in a few minutes.",
+        message: exception?.message ?? "Please try again in a few minutes.",
       });
     } else {
       return response.status(status).json({
