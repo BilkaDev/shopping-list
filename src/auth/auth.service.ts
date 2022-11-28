@@ -115,7 +115,7 @@ export class AuthService {
         httpOnly: true,
       });
 
-      return res.json({ isSuccess: true });
+      return res.json({ status: 200 });
     } catch (e) {
       return res.status(500).json({
         status: 500,

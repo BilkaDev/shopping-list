@@ -21,7 +21,7 @@ export class RecipeController {
   @UseGuards(AuthGuard("jwt"))
   @Get("/user/:recipeId")
   getOneRecipe(@UserObj() user: User, @Param("recipeId") recipeId: string) {
-    return this.recipeService.getOneRecipe(recipeId, user.id);
+    return this.recipeService.getOneRecipeResponse(recipeId, user.id);
   }
 
   @UseGuards(AuthGuard("jwt"))
