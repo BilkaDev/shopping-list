@@ -65,11 +65,11 @@ export class RecipeService {
     return { recipes };
   }
 
-  async createRecipe(recipe: CreateRecipeDto, user: User): Promise<CreateRecipeResponse> {
-    await this.noRecipeNameOrFail(recipe.userId, recipe.name);
+  async createRecipe({ userId, name, items, description }: CreateRecipeDto, user: User): Promise<CreateRecipeResponse> {
+    await this.noRecipeNameOrFail(userId, name);
     const newRecipe = new Recipe();
     newRecipe.items = [];
-    for (const item of recipe.items) {
+    for (const item of items) {
       const createItem = await this.listService.createItem({
         itemId: item.itemId,
         count: item.count,
@@ -77,19 +77,19 @@ export class RecipeService {
       });
       newRecipe.items.push(createItem);
     }
-    newRecipe.description = recipe.description;
-    newRecipe.name = recipe.name;
+    newRecipe.description = description;
+    newRecipe.name = name;
     newRecipe.user = user;
     await newRecipe.save();
     return { id: newRecipe.id };
   }
 
-  async addItemToRecipe(item: AddItemToRecipeDto, userId: string): Promise<AddItemToRecipe> {
-    const recipe = await this.getOneRecipeOrFail(item.recipeId, userId);
+  async addItemToRecipe({ recipeId, itemId, weight, count }: AddItemToRecipeDto, userId: string): Promise<AddItemToRecipe> {
+    const recipe = await this.getOneRecipeOrFail(recipeId, userId);
     const createItem = await this.listService.createItem({
-      itemId: item.itemId,
-      count: item.count,
-      weight: item.weight,
+      itemId,
+      count,
+      weight,
     });
     recipe.items.push(createItem);
     await recipe.save();
