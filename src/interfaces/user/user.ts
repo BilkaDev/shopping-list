@@ -6,10 +6,10 @@ export interface UserInterface {
 }
 
 export interface ChangePasswordResponse {
-  isSuccess: boolean;
+  message: string;
 }
 
-export type RegisterUserResponse = { id: string; email: string } | { isSuccess: false; message: string };
+export type RegisterUserResponse = { id: string; email: string };
 
 export type RecoverPasswordResponse = ChangePasswordResponse;
 export type AddAvatarResponse = ChangePasswordResponse;

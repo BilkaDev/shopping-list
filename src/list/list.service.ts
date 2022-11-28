@@ -118,7 +118,7 @@ export class ListService {
   }
 
   async createItem({ itemId, count, weight }: CreateItemInListDto): Promise<ItemInList> {
-    const product = await this.productService.getProduct(itemId);
+    const product = await this.productService.getProductOrFail(itemId);
     const newItem = new ItemInList();
     newItem.product = product;
     newItem.count = count;

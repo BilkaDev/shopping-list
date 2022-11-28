@@ -28,14 +28,13 @@ export class ProductService {
     return { products };
   }
 
-  async getProduct(productId: string): Promise<Product> {
+  async getProductOrFail(productId: string): Promise<Product> {
     const product = await Product.findOne({ where: { id: productId } });
     if (!product) throw new NotFoundException("Product does not exist.");
     return product;
   }
 
-  async addProduct(product: CreateProductDto, user: User): Promise<AddProductResponse> {
-    const { name, category } = product;
+  async addProduct({ name, category }: CreateProductDto, user: User): Promise<AddProductResponse> {
     await this.noProductNameOrFail(user.id, name);
 
     const newProduct = new Product();
@@ -48,14 +47,13 @@ export class ProductService {
   }
 
   async deleteProduct(productId: string): Promise<DeleteProductResponse> {
-    const item = await this.getProduct(productId);
+    const item = await this.getProductOrFail(productId);
     await item.remove();
     return { message: "Product was deleted successfully!" };
   }
 
-  async updateProduct(productId: string, userId: string, updateProduct: UpdateProductDto): Promise<UpdateProductResponse> {
-    const { category, name } = updateProduct;
-    const product = await this.getProduct(productId);
+  async updateProduct(productId: string, userId: string, { category, name }: UpdateProductDto): Promise<UpdateProductResponse> {
+    const product = await this.getProductOrFail(productId);
 
     if (name === product.name || !(await this.noProductNameOrFail(userId, name))) {
       const { affected } = await Product.update(productId, {

@@ -19,7 +19,7 @@ export class ProductController {
   @UseGuards(AuthGuard("jwt"))
   @Get("/item/:productId")
   getProduct(@Param("productId") productId: string) {
-    return this.productService.getProduct(productId);
+    return this.productService.getProductOrFail(productId);
   }
 
   @UseGuards(AuthGuard("jwt"))

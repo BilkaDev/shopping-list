@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { RegisterDto } from "./dto/register.dto";
 import { User } from "./user.entity";
 import { AddAvatarResponse, ChangePasswordResponse, RecoverPasswordResponse, RegisterUserResponse } from "../interfaces";
@@ -25,20 +25,20 @@ export class UserService {
       user.pwdHash = hashPwd(newUser.pwd, salz);
       user.salz = salz;
       await user.save();
-      return user;
+      return { id: user.id, email: user.email };
     } else {
-      return { isSuccess: false, message: "email is already in use" };
+      throw new NotFoundException("email is already in use");
     }
   }
 
-  async changePassword(newPwd: ChangePasswordDto, user: User): Promise<ChangePasswordResponse> {
-    if (user.pwdHash != hashPwd(newPwd.pwd, user.salz)) {
-      return { isSuccess: false };
+  async changePassword({ pwd, newPwd }: ChangePasswordDto, user: User): Promise<ChangePasswordResponse> {
+    if (user.pwdHash != hashPwd(pwd, user.salz)) {
+      throw new BadRequestException("Incorrect credentials.");
     }
-    user.pwdHash = hashPwd(newPwd.newPwd, user.salz);
+    user.pwdHash = hashPwd(newPwd, user.salz);
     await user.save();
     return {
-      isSuccess: true,
+      message: "Password has changed successfully!",
     };
   }
 
@@ -51,7 +51,7 @@ export class UserService {
 
     if (!user) {
       return {
-        isSuccess: true,
+        message: "If email is active then message sent",
       };
     }
 
@@ -62,7 +62,7 @@ export class UserService {
     await this.mailService.sendMail(recover.email, "recover password", recoverPasswordEmailTemplate(password));
 
     return {
-      isSuccess: true,
+      message: "If email is active then message sent",
     };
   }
 
@@ -80,7 +80,7 @@ export class UserService {
         user.photoFn = photo.filename;
       }
       await user.save();
-      return { isSuccess: true };
+      return { message: "Avatar saved successfully!" };
     } catch (e) {
       try {
         console.error(e);
@@ -95,8 +95,8 @@ export class UserService {
   async getPhoto(user: User, res: any) {
     try {
       if (!user.photoFn) {
-        res.json({
-          isSuccess: false,
+        res.status(400).json({
+          status: 400,
           message: "No photo in this entity!",
         });
       }
@@ -105,8 +105,8 @@ export class UserService {
       });
     } catch (e) {
       res.json({
-        isSuccess: false,
-        message: e.message,
+        status: 500,
+        message: "Something went wrong. Please try again later!",
       });
     }
   }
