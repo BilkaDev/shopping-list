@@ -51,7 +51,7 @@ export class UserService {
 
     if (!user) {
       return {
-        message: "If email is active then message sent",
+        message: "If e-mail is active then the message was sent",
       };
     }
 
@@ -62,7 +62,7 @@ export class UserService {
     await this.mailService.sendMail(recover.email, "recover password", recoverPasswordEmailTemplate(password));
 
     return {
-      message: "If email is active then message sent",
+      message: "If e-mail is active then the message was sent",
     };
   }
 
