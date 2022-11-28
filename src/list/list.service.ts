@@ -40,16 +40,7 @@ export class ListService {
     return true;
   }
 
-  async getUserLists(userId: string): Promise<GetListsResponse> {
-    const lists = await List.find({ where: { user: { id: userId } } });
-    return { lists };
-  }
-  async getListResponse(listId: string, userId: string): Promise<GetListResponse> {
-    const list = await this.getList(listId, userId);
-    return { list };
-  }
-
-  async getList(listId: string, userId: string): Promise<List> {
+  async getListOrFail(listId: string, userId: string): Promise<List> {
     const list = await List.findOne({
       where: {
         id: listId,
@@ -63,10 +54,26 @@ export class ListService {
     return list;
   }
 
-  async createList(list: CreateListDto, user: User): Promise<CreateListResponse> {
+  async getItemInListOrFail(id: string, userId: string): Promise<ItemInList> {
+    const item = await ItemInList.findOne({ where: { id, product: { user: { id: userId } } } });
+    if (!item) throw new NotFoundException("Product item does not exist.");
+    return item;
+  }
+
+  async getUserLists(userId: string): Promise<GetListsResponse> {
+    const lists = await List.find({ where: { user: { id: userId } } });
+    return { lists };
+  }
+
+  async getListResponse(listId: string, userId: string): Promise<GetListResponse> {
+    const list = await this.getListOrFail(listId, userId);
+    return { list };
+  }
+
+  async createList({ listName }: CreateListDto, user: User): Promise<CreateListResponse> {
     const newList = new List();
-    await this.noListNameOrFail(user.id, list.listName);
-    newList.listName = list.listName;
+    await this.noListNameOrFail(user.id, listName);
+    newList.listName = listName;
     newList.user = user;
     await newList.save();
     return {
@@ -75,13 +82,12 @@ export class ListService {
   }
 
   async deleteList(listId: string, userId: string): Promise<DeleteListResponse> {
-    const list = await this.getList(listId, userId);
+    const list = await this.getListOrFail(listId, userId);
     await list.remove();
     return { message: "List was deleted successfully!" };
   }
 
-  async editList(listId: string, list: CreateListDto, userId: string): Promise<EditListResponse> {
-    const { listName } = list;
+  async editList(listId: string, { listName }: CreateListDto, userId: string): Promise<EditListResponse> {
     await this.noListNameOrFail(userId, listName);
     const { affected } = await List.update(listId, {
       listName,
@@ -92,11 +98,10 @@ export class ListService {
     }
   }
 
-  // service Items in list
   async addItemToList(item: CreateItemInListDto, userId: string): Promise<AddItemToListResponse> {
     const newItem = await this.createItem(item);
     if (item.listId) {
-      const list = await this.getList(item.listId, userId);
+      const list = await this.getListOrFail(item.listId, userId);
       list.items.push(newItem);
       await list.save();
       return {
@@ -112,18 +117,12 @@ export class ListService {
     }
   }
 
-  async getItemInList(id: string, userId: string): Promise<ItemInList> {
-    const item = await ItemInList.findOne({ where: { id, product: { user: { id: userId } } } });
-    if (!item) throw new NotFoundException("Product item does not exist.");
-    return item;
-  }
-
-  async createItem(item: CreateItemInListDto): Promise<ItemInList> {
-    const product = await this.productService.getProduct(item.itemId);
+  async createItem({ itemId, count, weight }: CreateItemInListDto): Promise<ItemInList> {
+    const product = await this.productService.getProduct(itemId);
     const newItem = new ItemInList();
     newItem.product = product;
-    newItem.count = item.count;
-    newItem.weight = item.weight;
+    newItem.count = count;
+    newItem.weight = weight;
     await newItem.save();
     return newItem;
   }
@@ -133,24 +132,24 @@ export class ListService {
     return { items: itemsList };
   }
 
-  async updateItemInList(itemId: string, newItem: UpdateItemsListDto, userId: string): Promise<UpdateItemInListResponse> {
-    const item = await this.getItemInList(itemId, userId);
-    item.count = newItem.count;
-    item.weight = newItem.weight;
-    item.product.category = newItem.category;
+  async updateItemInList(itemId: string, { count, weight, category }: UpdateItemsListDto, userId: string): Promise<UpdateItemInListResponse> {
+    const item = await this.getItemInListOrFail(itemId, userId);
+    item.count = count;
+    item.weight = weight;
+    item.product.category = category;
     await item.product.save();
     await item.save();
     return { message: "Product has been updated!" };
   }
 
   async deleteItemInList(itemId: string, userId: string): Promise<DeleteItemInListResponse> {
-    const item = await this.getItemInList(itemId, userId);
+    const item = await this.getItemInListOrFail(itemId, userId);
     await item.remove();
     return { message: "Product has been remove!" };
   }
 
   async clearList(listId: string, userId: string): Promise<ClearListResponse> {
-    const list = await this.getList(listId, userId);
+    const list = await this.getListOrFail(listId, userId);
     for (const item of list.items) {
       await item.remove();
     }
@@ -159,7 +158,7 @@ export class ListService {
   }
 
   async addRecipeToList(listId: string, recipeId: string, userId: string): Promise<AddRecipeToListResponse> {
-    const list = await this.getList(listId, userId);
+    const list = await this.getListOrFail(listId, userId);
     const recipe = await this.recipeService.getOneRecipeOrFail(recipeId, userId);
     list.recipes.push(recipe);
     await list.save();
@@ -167,7 +166,7 @@ export class ListService {
   }
 
   async deleteRecipeFromList(listId: string, recipeId: string, userId: string): Promise<DeleteRecipeFromListResponse> {
-    const list = await this.getList(listId, userId);
+    const list = await this.getListOrFail(listId, userId);
     list.recipes = list.recipes.filter(recipeInList => {
       return recipeInList.id !== recipeId;
     });
@@ -176,21 +175,21 @@ export class ListService {
   }
 
   async addToBasket(itemId: string, userId: string): Promise<AddToBasketResponse> {
-    const item = await this.getItemInList(itemId, userId);
+    const item = await this.getItemInListOrFail(itemId, userId);
     item.itemInBasket = true;
     await item.save();
     return { message: "Product added to basket" };
   }
 
   async removeFromBasket(itemId: string, userId: string): Promise<RemoveFromBasketResponse> {
-    const item = await this.getItemInList(itemId, userId);
+    const item = await this.getItemInListOrFail(itemId, userId);
     item.itemInBasket = false;
     await item.save();
     return { message: "Product remove from basket" };
   }
 
   async clearBasket(listId: string, userId: string): Promise<ClearBasketResponse> {
-    const list = await this.getList(listId, userId);
+    const list = await this.getListOrFail(listId, userId);
     for (const item of list.items) {
       item.itemInBasket = false;
       await item.save();
