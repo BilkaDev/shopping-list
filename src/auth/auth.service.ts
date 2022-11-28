@@ -99,7 +99,7 @@ export class AuthService {
     } catch (e) {
       return res.status(500).json({
         status: 500,
-        message: e.message,
+        message: "Something went wrong. Please try again later",
       });
     }
   }
@@ -115,7 +115,7 @@ export class AuthService {
         httpOnly: true,
       });
 
-      return res.json({ status: 200 });
+      return res.json({ status: 200, data: { message: "Login successful!" } });
     } catch (e) {
       return res.status(500).json({
         status: 500,
