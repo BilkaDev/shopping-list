@@ -8,14 +8,15 @@ import { ILike } from "typeorm";
 
 @Injectable()
 export class ProductService {
-  async hasProducts(userId: string, name: string): Promise<boolean> {
-    const products = await Product.find({
+  async noProductNameOrFail(userId: string, name: string): Promise<boolean> {
+    const product = await Product.findOne({
       where: {
         user: { id: userId },
         name: ILike(name),
       },
     });
-    return products.length > 0;
+    if (product) throw new BadRequestException("The given product name is taken");
+    return true;
   }
 
   async getUserProducts(userId: string): Promise<ProductListResponse> {
@@ -35,8 +36,7 @@ export class ProductService {
 
   async addProduct(product: CreateProductDto, user: User): Promise<AddProductResponse> {
     const { name, category } = product;
-    const productItem = await this.hasProducts(user.id, name);
-    if (productItem) throw new BadRequestException("The given product name is taken");
+    await this.noProductNameOrFail(user.id, name);
 
     const newProduct = new Product();
     newProduct.name = name;
@@ -49,24 +49,20 @@ export class ProductService {
 
   async deleteProduct(productId: string): Promise<DeleteProductResponse> {
     const item = await this.getProduct(productId);
-    if (item) {
-      await item.remove();
-      return { message: "Product was deleted successfully!" };
-    } else throw new NotFoundException("Product does not exist.");
+    await item.remove();
+    return { message: "Product was deleted successfully!" };
   }
 
   async updateProduct(productId: string, userId: string, updateProduct: UpdateProductDto): Promise<UpdateProductResponse> {
     const { category, name } = updateProduct;
-    const isProductName = await this.hasProducts(userId, name);
     const product = await this.getProduct(productId);
 
-    if (name === product.name || (!isProductName && product && name !== product.name)) {
+    if (name === product.name || !(await this.noProductNameOrFail(userId, name))) {
       const { affected } = await Product.update(productId, {
         name,
         category,
       });
       if (affected) return { message: "Product has been updated!" };
     }
-    throw new BadRequestException("The given name is already taken.");
   }
 }
