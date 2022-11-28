@@ -103,7 +103,7 @@ export class ListService {
         id: newItem.id,
       };
     } else if (item.recipeId) {
-      const recipe = await this.recipeService.getOneRecipe(item.recipeId, userId);
+      const recipe = await this.recipeService.getOneRecipeOrFail(item.recipeId, userId);
       recipe.items.push(newItem);
       await recipe.save();
       return {
@@ -160,7 +160,7 @@ export class ListService {
 
   async addRecipeToList(listId: string, recipeId: string, userId: string): Promise<AddRecipeToListResponse> {
     const list = await this.getList(listId, userId);
-    const recipe = await this.recipeService.getOneRecipe(recipeId, userId);
+    const recipe = await this.recipeService.getOneRecipeOrFail(recipeId, userId);
     list.recipes.push(recipe);
     await list.save();
     return { message: "Recipe has been added!" };
