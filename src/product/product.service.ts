@@ -55,7 +55,7 @@ export class ProductService {
   async updateProduct(productId: string, userId: string, { category, name }: UpdateProductDto): Promise<UpdateProductResponse> {
     const product = await this.getProductOrFail(productId);
 
-    if (name === product.name || !(await this.noProductNameOrFail(userId, name))) {
+    if (name === product.name || (await this.noProductNameOrFail(userId, name))) {
       const { affected } = await Product.update(productId, {
         name,
         category,
