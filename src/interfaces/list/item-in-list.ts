@@ -1,6 +1,7 @@
 import { CreateItemInListDto } from "../../list/dto/create-item-in-list";
 import { ProductInterface } from "../product";
 import { UpdateItemsListDto } from "../../list/dto/update-item-in-list";
+import { ItemInList } from "../../list/item-in-list.entity";
 
 export interface ItemInListInterface {
   id: string;
@@ -12,24 +13,20 @@ export interface ItemInListInterface {
   recipeId?: string;
 }
 
-export type AddItemtoListResponse =
-  | {
-      isSuccess: true;
-      id: string;
-    }
-  | {
-      isSuccess: false;
-    };
+export type AddItemToListResponse = {
+  id: string;
+};
 
 export type DeleteItemInListResponse = {
-  isSuccess: boolean;
+  message: string;
 };
 export type UpdateItemInListResponse = DeleteItemInListResponse;
-export type GetListOfItemsResponse = ItemInListInterface[];
-export type GetItemInList = ItemInListInterface;
-export type CreateItemInListRequest = CreateItemInListDto;
+export type GetListOfItemsResponse = {
+  items: ItemInList[];
+};
 
+export type CreateItemInListRequest = CreateItemInListDto;
 export type UpdateItemInListRequest = UpdateItemsListDto;
-export type AddToBasketResponse = { isSuccess: boolean };
-export type RemoveFromBasketResponse = { isSuccess: boolean };
-export type ClearBasketResponse = { isSuccess: boolean };
+export type AddToBasketResponse = DeleteItemInListResponse;
+export type RemoveFromBasketResponse = DeleteItemInListResponse;
+export type ClearBasketResponse = DeleteItemInListResponse;

@@ -1,12 +1,23 @@
-import { forwardRef, Inject, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { Product } from "./product.entity";
 import { AddProductResponse, DeleteProductResponse, ProductListResponse, UpdateProductResponse } from "../interfaces";
 import { CreateProductDto } from "./dto/create-product";
-import { UserService } from "../user/user.service";
+import { User } from "../user/user.entity";
+import { UpdateProductDto } from "./dto/update-product";
+import { ILike } from "typeorm";
 
 @Injectable()
 export class ProductService {
-  constructor(@Inject(forwardRef(() => UserService)) private user: UserService) {}
+  async noProductNameOrFail(userId: string, name: string): Promise<boolean> {
+    const product = await Product.findOne({
+      where: {
+        user: { id: userId },
+        name: ILike(name),
+      },
+    });
+    if (product) throw new BadRequestException("The given product name is taken");
+    return true;
+  }
 
   async getUserProducts(userId: string): Promise<ProductListResponse> {
     const products = await Product.find({
@@ -14,68 +25,42 @@ export class ProductService {
         user: { id: userId },
       },
     });
-    return {
-      isSuccess: true,
-      products,
-    };
+    return { products };
   }
 
-  async getProduct(productId): Promise<Product> {
-    return await Product.findOne({ where: { id: productId } });
+  async getProductOrFail(productId: string): Promise<Product> {
+    const product = await Product.findOne({ where: { id: productId } });
+    if (!product) throw new NotFoundException("Product does not exist.");
+    return product;
   }
 
-  async hasProducts(userId: string, name: string): Promise<boolean> {
-    return (await this.getUserProducts(userId)).products.some(product => product.name.toLowerCase() === name.toLowerCase());
-  }
+  async addProduct({ name, category }: CreateProductDto, user: User): Promise<AddProductResponse> {
+    await this.noProductNameOrFail(user.id, name);
 
-  async addProduct(product: CreateProductDto): Promise<AddProductResponse> {
-    const { name, category, userId } = product;
-    const user = await this.user.getOneUser(product.userId);
-    const productItem = await this.hasProducts(userId, name);
-    if (productItem || !user) {
-      return { isSuccess: false };
-    }
     const newProduct = new Product();
     newProduct.name = name;
     newProduct.category = category;
     newProduct.user = user;
 
     await newProduct.save();
-    return {
-      id: newProduct.id,
-      isSuccess: true,
-    };
+    return { product: { id: newProduct.id } };
   }
 
   async deleteProduct(productId: string): Promise<DeleteProductResponse> {
-    const item = await this.getProduct(productId);
-    if (item) {
-      await item.remove();
-      return {
-        isSuccess: true,
-      };
-    } else
-      return {
-        isSuccess: false,
-      };
+    const item = await this.getProductOrFail(productId);
+    await item.remove();
+    return { message: "Product was deleted successfully!" };
   }
 
-  async updateProduct(productId: string, userId: string, updateProduct): Promise<UpdateProductResponse> {
-    const { category, name } = updateProduct;
-    const isProductName = await this.hasProducts(userId, name);
-    const product = await this.getProduct(productId);
+  async updateProduct(productId: string, userId: string, { category, name }: UpdateProductDto): Promise<UpdateProductResponse> {
+    const product = await this.getProductOrFail(productId);
 
-    if (name === product.name || (!isProductName && product && name !== product.name)) {
+    if (name === product.name || (await this.noProductNameOrFail(userId, name))) {
       const { affected } = await Product.update(productId, {
         name,
         category,
       });
-      if (affected) {
-        return { isSuccess: true };
-      }
+      if (affected) return { message: "Product has been updated!" };
     }
-    return {
-      isSuccess: false,
-    };
   }
 }

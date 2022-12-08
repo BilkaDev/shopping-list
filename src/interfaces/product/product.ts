@@ -16,25 +16,18 @@ export enum ProductCategory {
   "Candy",
 }
 
-export type AddProductResponse =
-  | {
-      isSuccess: true;
-      id: string;
-    }
-  | {
-      isSuccess: false;
-    };
+export type AddProductResponse = {
+  product: { id: string };
+};
 
 export type DeleteProductResponse = {
-  isSuccess: boolean;
+  message: string;
 };
 
 export type ProductListResponse = {
-  isSuccess: true;
   products: ProductInterface[];
 };
 
-export type GetProductResponse = ProductInterface;
 export type UpdateProductResponse = DeleteProductResponse;
 
 export type CreateProductRequest = CreateProductDto;

@@ -11,16 +11,14 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     console.error(exception?.message);
     console.error(exception);
     if (status === 500) {
-      return response.json({
-        isSuccess: false,
+      return response.status(500).json({
         status,
-        message: "Please try again in a few minutes.",
+        message: exception?.message ?? "Please try again in a few minutes.",
       });
     } else {
       return response.status(status).json({
-        isSuccess: false,
         status,
-        message: exception.message,
+        message: exception.response.message instanceof Array ? exception.response.message[0] : exception.message,
       });
     }
   }

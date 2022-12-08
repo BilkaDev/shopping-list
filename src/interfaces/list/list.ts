@@ -9,22 +9,26 @@ export interface ListInterface {
   recipes: RecipeInterface[];
 }
 
-export type CreateListResponse =
-  | {
-      isSuccess: true;
-      id: string;
-    }
-  | {
-      isSuccess: false;
-    };
+export type ListFilter = Omit<ListInterface, "items" | "recipes">;
+
+export type CreateListResponse = {
+  id: string;
+};
 
 export type DeleteListResponse = {
-  isSuccess: boolean;
+  message: string;
 };
+
 export type AddRecipeToListResponse = DeleteListResponse;
 export type DeleteRecipeFromListResponse = DeleteListResponse;
 export type EditListResponse = DeleteListResponse;
-export type GetListsResponse = Omit<ListInterface[], "items">;
-export type GetListResponse = ListInterface;
+export type ClearListResponse = DeleteListResponse;
+export type GetListsResponse = {
+  lists: ListFilter[];
+};
+
+export type GetListResponse = {
+  list: ListInterface;
+};
 
 export type CreateListRequest = CreateListDto;

@@ -45,15 +45,15 @@ export class AuthService {
   async login(req: AuthLoginDto, res: Response) {
     try {
       if (!req.email.includes("@")) {
-        return res.json({
-          isSuccess: false,
+        return res.status(400).json({
+          status: 400,
           message: "Wrong e-mail.",
         });
       }
 
       if (req.pwd.length < 6) {
-        return res.json({
-          isSuccess: false,
+        return res.status(400).json({
+          status: 400,
           message: "The password must not be shorter than 6 characters",
         });
       }
@@ -65,16 +65,16 @@ export class AuthService {
       });
 
       if (!user) {
-        return res.json({
-          isSuccess: false,
+        return res.status(400).json({
+          status: 400,
           message: "Incorrect login credentials!",
         });
       }
 
       const password = hashPwd(req.pwd, user.salz);
       if (user.pwdHash !== password) {
-        return res.json({
-          isSuccess: false,
+        return res.status(400).json({
+          status: 400,
           message: "Incorrect login credentials!",
         });
       }
@@ -88,14 +88,18 @@ export class AuthService {
           httpOnly: true,
         })
         .json({
-          isSuccess: true,
-          userId: user.id,
-          email: user.email,
+          status: 200,
+          data: {
+            user: {
+              userId: user.id,
+              email: user.email,
+            },
+          },
         });
     } catch (e) {
-      return res.json({
-        isSuccess: false,
-        message: e.message,
+      return res.status(500).json({
+        status: 500,
+        message: "Something went wrong. Please try again later",
       });
     }
   }
@@ -111,10 +115,10 @@ export class AuthService {
         httpOnly: true,
       });
 
-      return res.json({ isSuccess: true });
+      return res.json({ status: 200, data: { message: "Login successful!" } });
     } catch (e) {
-      return res.json({
-        isSuccess: false,
+      return res.status(500).json({
+        status: 500,
         error: e.message,
       });
     }
@@ -129,9 +133,8 @@ export class AuthService {
         httpOnly: true,
       })
       .json({
-        isSuccess: true,
-        userId: user.id,
-        email: user.email,
+        status: 200,
+        data: { user: { userId: user.id, email: user.email } },
       });
   }
 }

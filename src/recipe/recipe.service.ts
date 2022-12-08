@@ -1,109 +1,119 @@
-import { BadRequestException, forwardRef, Inject, Injectable } from "@nestjs/common";
+import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { Recipe } from "./recipe.entity";
 import { CreateRecipeDto } from "./dto/create-recipe";
-import { AddItemToRecipe, CreateRecipeResponse, DeleteRecipeResponse, EditNameRecipeResponse, GetRecipesResponse } from "../interfaces";
+import {
+  AddItemToRecipe,
+  CreateRecipeResponse,
+  DeleteRecipeResponse,
+  EditDescriptionRecipeResponse,
+  EditNameRecipeResponse,
+  GetRecipeResponse,
+  GetRecipesResponse,
+  RecipeFilter,
+} from "../interfaces";
 import { ListService } from "src/list/list.service";
 import { AddItemToRecipeDto } from "./dto/add-item-to-recipe";
-import { UserService } from "../user/user.service";
 import { EditRecipeDto } from "./dto/edit-name-recipe";
 import { EditDescriptionRecipeDto } from "./dto/edit-description-recipe";
+import { ILike } from "typeorm";
+import { User } from "../user/user.entity";
 
 @Injectable()
 export class RecipeService {
-  constructor(@Inject(forwardRef(() => ListService)) private listService: ListService, @Inject(forwardRef(() => UserService)) private userService: UserService) {}
+  constructor(@Inject(forwardRef(() => ListService)) private listService: ListService) {}
 
-  async createRecipe(recipe: CreateRecipeDto): Promise<CreateRecipeResponse> {
-    const user = await this.userService.getOneUser(recipe.userId);
-    if (!user) return { isSuccess: false };
-    const checkName = await this.hasRecipe(recipe.userId, recipe.name);
-    if (!checkName) {
-      const newRecipe = new Recipe();
-      newRecipe.items = [];
-      for (const item of recipe.items) {
-        const createItem = await this.listService.createItem({
-          itemId: item.itemId,
-          count: item.count,
-          weight: item.weight,
-        });
-        newRecipe.items.push(createItem);
-      }
-      newRecipe.description = recipe.description;
-      newRecipe.name = recipe.name;
-      newRecipe.user = user;
-      await newRecipe.save();
-      return {
-        isSuccess: true,
-        id: newRecipe.id,
-      };
-    } else return { isSuccess: false };
-  }
-
-  private async hasRecipe(userId: string, name: string) {
-    return (await this.getUserRecipes(userId)).some(recipe => recipe.name.toLowerCase() === name.toLowerCase());
-  }
-
-  async getUserRecipes(userId: string): Promise<GetRecipesResponse> {
-    return (
-      await Recipe.find({
-        where: { user: { id: userId } },
-      })
-    ).map(recipe => ({
+  filter = (recipes: Recipe[]): RecipeFilter[] =>
+    recipes.map(recipe => ({
       name: recipe.name,
       id: recipe.id,
     }));
+
+  async noRecipeNameOrFail(userId: string, name: string): Promise<boolean> {
+    const recipe = await Recipe.findOne({
+      where: {
+        name: ILike(name),
+        user: { id: userId },
+      },
+    });
+    console.log(recipe);
+    if (recipe) throw new BadRequestException("The given name is already taken.");
+    return true;
   }
 
-  async getOneRecipe(recipeId: string) {
+  async getOneRecipeOrFail(recipeId: string, userId: string): Promise<Recipe> {
     const recipe = await Recipe.findOne({
-      where: { id: recipeId },
+      where: { id: recipeId, user: { id: userId } },
       relations: ["items"],
     });
-    if (recipe === null) {
-      throw new BadRequestException("Cannot find recipe.");
+    if (!recipe) {
+      throw new NotFoundException("Cannot find recipe.");
     }
     return recipe;
   }
 
-  async addItemToRecipe(item: AddItemToRecipeDto): Promise<AddItemToRecipe> {
-    const recipe = await this.getOneRecipe(item.recipeId);
-    if (recipe) {
+  async getOneRecipeResponse(recipeId: string, userId: string): Promise<GetRecipeResponse> {
+    const recipe = await this.getOneRecipeOrFail(recipeId, userId);
+    return { recipe };
+  }
+
+  async getUserRecipes(userId: string): Promise<GetRecipesResponse> {
+    const recipes = this.filter(
+      await Recipe.find({
+        where: { user: { id: userId } },
+      }),
+    );
+    return { recipes };
+  }
+
+  async createRecipe({ userId, name, items, description }: CreateRecipeDto, user: User): Promise<CreateRecipeResponse> {
+    await this.noRecipeNameOrFail(userId, name);
+    const newRecipe = new Recipe();
+    newRecipe.items = [];
+    for (const item of items) {
       const createItem = await this.listService.createItem({
         itemId: item.itemId,
         count: item.count,
         weight: item.weight,
       });
-      recipe.items.push(createItem);
-      await recipe.save();
-      return {
-        id: createItem.id,
-        isSuccess: true,
-      };
-    } else return { isSuccess: false };
+      newRecipe.items.push(createItem);
+    }
+    newRecipe.description = description;
+    newRecipe.name = name;
+    newRecipe.user = user;
+    await newRecipe.save();
+    return { id: newRecipe.id };
   }
 
-  async editNamedRecipe({ id, name }: EditRecipeDto): Promise<EditNameRecipeResponse> {
-    const recipe = await this.getOneRecipe(id);
-    if (recipe) {
-      recipe.name = name;
-      await recipe.save();
-      return { isSuccess: true };
-    } else return { isSuccess: false };
+  async addItemToRecipe({ recipeId, itemId, weight, count }: AddItemToRecipeDto, userId: string): Promise<AddItemToRecipe> {
+    const recipe = await this.getOneRecipeOrFail(recipeId, userId);
+    const createItem = await this.listService.createItem({
+      itemId,
+      count,
+      weight,
+    });
+    recipe.items.push(createItem);
+    await recipe.save();
+    return { id: createItem.id };
   }
 
-  async deleteRecipe(recipeId: string): Promise<DeleteRecipeResponse> {
-    const recipe = await this.getOneRecipe(recipeId);
-    if (recipe) {
-      await recipe.remove();
-      return { isSuccess: true };
-    } else return { isSuccess: false };
+  async editNamedRecipe({ id, name }: EditRecipeDto, userId: string): Promise<EditNameRecipeResponse> {
+    const recipe = await this.getOneRecipeOrFail(id, userId);
+    await this.noRecipeNameOrFail(userId, name);
+    recipe.name = name;
+    await recipe.save();
+    return { message: "Recipe has been updated!" };
   }
 
-  editDescriptionRecipe = async ({ description, id }: EditDescriptionRecipeDto) => {
-    const recipe = await this.getOneRecipe(id);
-    if (recipe) {
-      recipe.description = description;
-      await recipe.save();
-      return { isSuccess: true };
-    } else return { isSuccess: false };
+  async deleteRecipe(recipeId: string, userId: string): Promise<DeleteRecipeResponse> {
+    const recipe = await this.getOneRecipeOrFail(recipeId, userId);
+    await recipe.remove();
+    return { message: "Recipe has been remove!" };
+  }
+
+  editDescriptionRecipe = async ({ description, id }: EditDescriptionRecipeDto, userId: string): Promise<EditDescriptionRecipeResponse> => {
+    const recipe = await this.getOneRecipeOrFail(id, userId);
+    recipe.description = description;
+    await recipe.save();
+    return { message: "Recipe has been update!" };
   };
 }

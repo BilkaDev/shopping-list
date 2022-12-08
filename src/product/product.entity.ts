@@ -1,10 +1,10 @@
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "../user/user.entity";
-import { ProductCategory, ProductInterface } from "../interfaces";
+import { ProductCategory } from "../interfaces";
 import { ItemInList } from "../list/item-in-list.entity";
 
 @Entity()
-export class Product extends BaseEntity implements ProductInterface {
+export class Product extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
