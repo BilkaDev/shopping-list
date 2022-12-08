@@ -1,7 +1,8 @@
-import { BaseEntity, Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { ItemInList } from "./item-in-list.entity";
 import { Recipe } from "../recipe/recipe.entity";
 import { User } from "../user/user.entity";
+import { Basket } from "../basket/basket.entity";
 
 @Entity()
 export class List extends BaseEntity {
@@ -23,4 +24,7 @@ export class List extends BaseEntity {
   @ManyToOne(() => User, entity => entity.lists)
   @JoinColumn()
   user: User;
+
+  @OneToOne(() => Basket)
+  basket: Basket;
 }

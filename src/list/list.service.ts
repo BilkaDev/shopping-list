@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { List } from "./list.entity";
 import { CreateListDto } from "./dto/create-list";
 import {
@@ -24,10 +24,16 @@ import { UpdateItemsListDto } from "./dto/update-item-in-list";
 import { RecipeService } from "../recipe/recipe.service";
 import { ILike } from "typeorm";
 import { User } from "../user/user.entity";
+import { BasketService } from "../basket/basket.service";
+import { Basket } from "../basket/basket.entity";
 
 @Injectable()
 export class ListService {
-  constructor(@Inject(ProductService) private productService: ProductService, @Inject(RecipeService) private recipeService: RecipeService) {}
+  constructor(
+    @Inject(ProductService) private productService: ProductService,
+    @Inject(RecipeService) private recipeService: RecipeService,
+    @Inject(forwardRef(() => BasketService)) private basketService: BasketService,
+  ) {}
 
   async noListNameOrFail(userId: string, name: string): Promise<boolean> {
     const list = await List.findOne({
@@ -72,10 +78,13 @@ export class ListService {
 
   async createList({ listName }: CreateListDto, user: User): Promise<CreateListResponse> {
     const newList = new List();
+    const basket = new Basket();
     await this.noListNameOrFail(user.id, listName);
     newList.listName = listName;
     newList.user = user;
     await newList.save();
+    basket.list = newList;
+    await basket.save();
     return {
       id: newList.id,
     };
