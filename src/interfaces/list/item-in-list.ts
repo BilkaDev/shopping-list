@@ -27,6 +27,3 @@ export type GetListOfItemsResponse = {
 
 export type CreateItemInListRequest = CreateItemInListDto;
 export type UpdateItemInListRequest = UpdateItemsListDto;
-export type AddToBasketResponse = DeleteItemInListResponse;
-export type RemoveFromBasketResponse = DeleteItemInListResponse;
-export type ClearBasketResponse = DeleteItemInListResponse;

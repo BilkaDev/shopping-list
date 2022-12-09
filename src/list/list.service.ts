@@ -1,10 +1,8 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { List } from "./list.entity";
 import { CreateListDto } from "./dto/create-list";
 import {
   AddRecipeToListResponse,
-  AddToBasketResponse,
-  ClearBasketResponse,
   ClearListResponse,
   CreateListResponse,
   DeleteItemInListResponse,
@@ -14,7 +12,6 @@ import {
   GetListOfItemsResponse,
   GetListResponse,
   GetListsResponse,
-  RemoveFromBasketResponse,
 } from "../interfaces";
 import { CreateItemInListDto } from "./dto/create-item-in-list";
 import { AddItemToListResponse, UpdateItemInListResponse } from "../interfaces";
@@ -24,10 +21,16 @@ import { UpdateItemsListDto } from "./dto/update-item-in-list";
 import { RecipeService } from "../recipe/recipe.service";
 import { ILike } from "typeorm";
 import { User } from "../user/user.entity";
+import { BasketService } from "../basket/basket.service";
+import { Basket } from "../basket/basket.entity";
 
 @Injectable()
 export class ListService {
-  constructor(@Inject(ProductService) private productService: ProductService, @Inject(RecipeService) private recipeService: RecipeService) {}
+  constructor(
+    @Inject(ProductService) private productService: ProductService,
+    @Inject(RecipeService) private recipeService: RecipeService,
+    @Inject(forwardRef(() => BasketService)) private basketService: BasketService,
+  ) {}
 
   async noListNameOrFail(userId: string, name: string): Promise<boolean> {
     const list = await List.findOne({
@@ -65,8 +68,19 @@ export class ListService {
     return { lists };
   }
 
+  setItemInBasket = (item: ItemInList, baskets: Basket[]) => {
+    for (const basket of baskets) {
+      if (item.id === basket.item.id) {
+        item.itemInBasket = true;
+        return;
+      }
+    }
+  };
   async getListResponse(listId: string, userId: string): Promise<GetListResponse> {
     const list = await this.getListOrFail(listId, userId);
+    const baskets = await Basket.find({ where: { list: { id: listId } } });
+    list.items.forEach(item => this.setItemInBasket(item, baskets));
+    list.recipes.forEach(recipe => recipe.items.forEach(item => this.setItemInBasket(item, baskets)));
     return { list };
   }
 
@@ -172,34 +186,5 @@ export class ListService {
     });
     await list.save();
     return { message: "Recipe has been remove!" };
-  }
-
-  async addToBasket(itemId: string, userId: string): Promise<AddToBasketResponse> {
-    const item = await this.getItemInListOrFail(itemId, userId);
-    item.itemInBasket = true;
-    await item.save();
-    return { message: "Product added to basket" };
-  }
-
-  async removeFromBasket(itemId: string, userId: string): Promise<RemoveFromBasketResponse> {
-    const item = await this.getItemInListOrFail(itemId, userId);
-    item.itemInBasket = false;
-    await item.save();
-    return { message: "Product remove from basket" };
-  }
-
-  async clearBasket(listId: string, userId: string): Promise<ClearBasketResponse> {
-    const list = await this.getListOrFail(listId, userId);
-    for (const item of list.items) {
-      item.itemInBasket = false;
-      await item.save();
-    }
-    for (const recipe of list.recipes) {
-      for (const item of recipe.items) {
-        item.itemInBasket = false;
-        await item.save();
-      }
-    }
-    return { message: "Basket is empty." };
   }
 }
