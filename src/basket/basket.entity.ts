@@ -1,4 +1,4 @@
-import { BaseEntity, Entity, JoinColumn, JoinTable, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BaseEntity, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { List } from "../list/list.entity";
 import { ItemInList } from "../list/item-in-list.entity";
 
@@ -7,11 +7,11 @@ export class Basket extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @OneToOne(() => List)
-  @JoinColumn()
+  @ManyToOne(() => List, {
+    onDelete: "CASCADE",
+  })
   list: List;
 
-  @ManyToOne(() => ItemInList, entity => entity.bakset)
-  @JoinTable()
-  items: ItemInList[];
+  @ManyToOne(() => ItemInList, entity => entity.basket, { eager: true })
+  item: ItemInList;
 }

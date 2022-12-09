@@ -3,8 +3,6 @@ import { List } from "./list.entity";
 import { CreateListDto } from "./dto/create-list";
 import {
   AddRecipeToListResponse,
-  AddToBasketResponse,
-  ClearBasketResponse,
   ClearListResponse,
   CreateListResponse,
   DeleteItemInListResponse,
@@ -14,7 +12,6 @@ import {
   GetListOfItemsResponse,
   GetListResponse,
   GetListsResponse,
-  RemoveFromBasketResponse,
 } from "../interfaces";
 import { CreateItemInListDto } from "./dto/create-item-in-list";
 import { AddItemToListResponse, UpdateItemInListResponse } from "../interfaces";
@@ -71,20 +68,28 @@ export class ListService {
     return { lists };
   }
 
+  setItemInBasket = (item: ItemInList, baskets: Basket[]) => {
+    for (const basket of baskets) {
+      if (item.id === basket.item.id) {
+        item.itemInBasket = true;
+        return;
+      }
+    }
+  };
   async getListResponse(listId: string, userId: string): Promise<GetListResponse> {
     const list = await this.getListOrFail(listId, userId);
+    const baskets = await Basket.find({ where: { list: { id: listId } } });
+    list.items.forEach(item => this.setItemInBasket(item, baskets));
+    list.recipes.forEach(recipe => recipe.items.forEach(item => this.setItemInBasket(item, baskets)));
     return { list };
   }
 
   async createList({ listName }: CreateListDto, user: User): Promise<CreateListResponse> {
     const newList = new List();
-    const basket = new Basket();
     await this.noListNameOrFail(user.id, listName);
     newList.listName = listName;
     newList.user = user;
     await newList.save();
-    basket.list = newList;
-    await basket.save();
     return {
       id: newList.id,
     };
@@ -181,34 +186,5 @@ export class ListService {
     });
     await list.save();
     return { message: "Recipe has been remove!" };
-  }
-
-  async addToBasket(itemId: string, userId: string): Promise<AddToBasketResponse> {
-    const item = await this.getItemInListOrFail(itemId, userId);
-    item.itemInBasket = true;
-    await item.save();
-    return { message: "Product added to basket" };
-  }
-
-  async removeFromBasket(itemId: string, userId: string): Promise<RemoveFromBasketResponse> {
-    const item = await this.getItemInListOrFail(itemId, userId);
-    item.itemInBasket = false;
-    await item.save();
-    return { message: "Product remove from basket" };
-  }
-
-  async clearBasket(listId: string, userId: string): Promise<ClearBasketResponse> {
-    const list = await this.getListOrFail(listId, userId);
-    for (const item of list.items) {
-      item.itemInBasket = false;
-      await item.save();
-    }
-    for (const recipe of list.recipes) {
-      for (const item of recipe.items) {
-        item.itemInBasket = false;
-        await item.save();
-      }
-    }
-    return { message: "Basket is empty." };
   }
 }

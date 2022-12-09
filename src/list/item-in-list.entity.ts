@@ -37,9 +37,8 @@ export class ItemInList extends BaseEntity {
   @ManyToOne(() => Recipe, entity => entity.items, {
     onDelete: "CASCADE",
   })
-  @JoinColumn()
   recipe: Recipe;
 
-  @OneToMany(() => Basket, entity => entity.items)
-  bakset: Basket;
+  @OneToMany(() => Basket, entity => entity.item)
+  basket: Basket[];
 }
