@@ -4,6 +4,7 @@
 
 #config files
 /src/config/config-database.ts
+mailerconfig.ts
 .env
 
 # Logs
