@@ -12,6 +12,7 @@ import { MulterDiskUploadedFiles } from "../interfaces/files";
 import * as fs from "fs/promises";
 import * as path from "path";
 import { storageDir } from "../utils/storage";
+import { singUpEmailTemplate } from "../templates/sing-up";
 
 @Injectable()
 export class UserService {
@@ -25,6 +26,7 @@ export class UserService {
       user.pwdHash = hashPwd(newUser.pwd, salz);
       user.salz = salz;
       await user.save();
+      await this.mailService.sendMail(newUser.email, "recover password", singUpEmailTemplate());
       return { id: user.id, email: user.email };
     } else {
       throw new NotFoundException("email is already in use");
