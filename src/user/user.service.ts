@@ -97,12 +97,12 @@ export class UserService {
   async getPhoto(user: User, res: any) {
     try {
       if (!user.photoFn) {
-        res.status(400).json({
+        return res.status(400).json({
           status: 400,
           message: "No photo in this entity!",
         });
       }
-      res.sendFile(user.photoFn, {
+      return res.sendFile(user.photoFn, {
         root: path.join(storageDir(), "avatar-photos"),
       });
     } catch (e) {
