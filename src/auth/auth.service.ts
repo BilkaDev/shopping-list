@@ -6,6 +6,7 @@ import { hashPwd } from "../utils/hash-pwd";
 import { JwtPayload } from "./jwt.strategy";
 import { sign } from "jsonwebtoken";
 import { v4 as uuid } from "uuid";
+import { CONFIG } from "../config/client-config";
 
 @Injectable()
 export class AuthService {
@@ -83,8 +84,8 @@ export class AuthService {
 
       return res
         .cookie("jwt", token.accessToken, {
-          secure: false,
-          domain: "localhost",
+          secure: CONFIG.secure,
+          domain: CONFIG.domain,
           httpOnly: true,
         })
         .json({
@@ -110,8 +111,8 @@ export class AuthService {
       await user.save();
 
       res.clearCookie("jwt", {
-        secure: false,
-        domain: "localhost",
+        secure: CONFIG.secure,
+        domain: CONFIG.domain,
         httpOnly: true,
       });
 
@@ -128,8 +129,8 @@ export class AuthService {
     const token = this.createToken(await this.generateToken(user));
     return res
       .cookie("jwt", token.accessToken, {
-        secure: false,
-        domain: "localhost",
+        secure: CONFIG.secure,
+        domain: CONFIG.domain,
         httpOnly: true,
       })
       .json({
@@ -148,8 +149,8 @@ export class AuthService {
       const token = this.createToken(await this.generateToken(user));
       return res
         .cookie("jwt", token.accessToken, {
-          secure: false,
-          domain: "localhost",
+          secure: CONFIG.secure,
+          domain: CONFIG.domain,
           httpOnly: true,
         })
         .json({
