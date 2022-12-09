@@ -12,6 +12,6 @@ export class Basket extends BaseEntity {
   })
   list: List;
 
-  @ManyToOne(() => ItemInList, entity => entity.basket, { eager: true })
+  @ManyToOne(() => ItemInList, entity => entity.basket, { eager: true, onDelete: "CASCADE" })
   item: ItemInList;
 }
