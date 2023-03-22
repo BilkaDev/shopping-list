@@ -7,6 +7,7 @@ import { UserModule } from "./user/user.module";
 import { AuthModule } from "./auth/auth.module";
 import { ConfigModule } from "@nestjs/config";
 import { MailModule } from "./mail/mail.module";
+import { BasketModule } from "./basket/basket.module";
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { MailModule } from "./mail/mail.module";
       isGlobal: true,
     }),
     MailModule,
+    BasketModule,
   ],
 })
 export class AppModule {}

@@ -4,18 +4,20 @@ import { ValidationPipe } from "@nestjs/common";
 import { GlobalExceptionFilter } from "./filters/global-exception.filter";
 import * as cookieParser from "cookie-parser";
 import { ApiTransformInterceptor } from "./interceptors/api-transform.interceptors";
+import { CONFIG } from "./config/client-config";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.setGlobalPrefix("api");
 
   app.enableCors({
-    origin: "http://localhost:3000",
+    origin: CONFIG.corsOrigin,
     credentials: true,
   });
 
   app.useGlobalPipes(
     new ValidationPipe({
-      // disableErrorMessages: true,
+      disableErrorMessages: true,
       whitelist: true,
       forbidNonWhitelisted: true,
       transformOptions: { enableImplicitConversion: true },

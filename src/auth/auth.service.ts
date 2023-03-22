@@ -6,6 +6,7 @@ import { hashPwd } from "../utils/hash-pwd";
 import { JwtPayload } from "./jwt.strategy";
 import { sign } from "jsonwebtoken";
 import { v4 as uuid } from "uuid";
+import { CONFIG } from "../config/client-config";
 
 @Injectable()
 export class AuthService {
@@ -83,8 +84,8 @@ export class AuthService {
 
       return res
         .cookie("jwt", token.accessToken, {
-          secure: false,
-          domain: "localhost",
+          secure: CONFIG.secure,
+          domain: CONFIG.domain,
           httpOnly: true,
         })
         .json({
@@ -110,8 +111,8 @@ export class AuthService {
       await user.save();
 
       res.clearCookie("jwt", {
-        secure: false,
-        domain: "localhost",
+        secure: CONFIG.secure,
+        domain: CONFIG.domain,
         httpOnly: true,
       });
 
@@ -128,13 +129,44 @@ export class AuthService {
     const token = this.createToken(await this.generateToken(user));
     return res
       .cookie("jwt", token.accessToken, {
-        secure: false,
-        domain: "localhost",
+        secure: CONFIG.secure,
+        domain: CONFIG.domain,
         httpOnly: true,
       })
       .json({
         status: 200,
         data: { user: { userId: user.id, email: user.email } },
       });
+  }
+
+  async testUserLogin(res: Response) {
+    try {
+      const user = await User.findOne({
+        where: {
+          email: "test@example.com",
+        },
+      });
+      const token = this.createToken(await this.generateToken(user));
+      return res
+        .cookie("jwt", token.accessToken, {
+          secure: CONFIG.secure,
+          domain: CONFIG.domain,
+          httpOnly: true,
+        })
+        .json({
+          status: 200,
+          data: {
+            user: {
+              userId: user.id,
+              email: user.email,
+            },
+          },
+        });
+    } catch (e) {
+      return res.status(500).json({
+        status: 500,
+        message: "Something went wrong. Please try again later",
+      });
+    }
   }
 }
