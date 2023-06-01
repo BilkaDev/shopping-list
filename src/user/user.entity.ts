@@ -32,8 +32,6 @@ export class User extends BaseEntity implements UserInterface {
   })
   currentTokenId: string | null;
 
-  @Column()
-  salz: string;
   @Column({
     default: null,
   })

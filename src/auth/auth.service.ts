@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
+import * as argon2 from "argon2";
 import { AuthLoginDto } from "./dto/auth-login";
 import { Response } from "express";
 import { User } from "../user/user.entity";
-import { hashPwd } from "../utils/hash-pwd";
 import { JwtPayload } from "./jwt.strategy";
 import { sign } from "jsonwebtoken";
 import { v4 as uuid } from "uuid";
@@ -72,8 +72,9 @@ export class AuthService {
         });
       }
 
-      const password = hashPwd(req.pwd, user.salz);
-      if (user.pwdHash !== password) {
+      const isValidPassword = await argon2.verify(user.pwdHash, req.pwd);
+
+      if (!isValidPassword) {
         return res.status(400).json({
           status: 400,
           message: "Incorrect login credentials!",

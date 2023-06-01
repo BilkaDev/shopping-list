@@ -1,8 +1,8 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from "@nestjs/common";
+import * as argon2 from "argon2";
 import { RegisterDto } from "./dto/register.dto";
 import { User } from "./user.entity";
 import { AddAvatarResponse, ChangePasswordResponse, RecoverPasswordResponse, RegisterUserResponse } from "../interfaces";
-import { hashPwd, randomSalz } from "../utils/hash-pwd";
 import { ChangePasswordDto } from "./dto/change-password.dto";
 import { randomPassword } from "../utils/random-password";
 import { RecoverPasswordDto } from "./dto/recover-password.dto";
@@ -17,14 +17,13 @@ import { singUpEmailTemplate } from "../templates/sing-up";
 @Injectable()
 export class UserService {
   constructor(@Inject(MailService) private mailService: MailService) {}
+
   async register(newUser: RegisterDto): Promise<RegisterUserResponse> {
     const checkEmail = await User.findOne({ where: { email: newUser.email } });
     if (!checkEmail && newUser.email.length > 0) {
       const user = new User();
       user.email = newUser.email;
-      const salz = randomSalz(128);
-      user.pwdHash = hashPwd(newUser.pwd, salz);
-      user.salz = salz;
+      user.pwdHash = await argon2.hash(newUser.pwd);
       await user.save();
       await this.mailService.sendMail(newUser.email, "recover password", singUpEmailTemplate());
       return { id: user.id, email: user.email };
@@ -34,10 +33,11 @@ export class UserService {
   }
 
   async changePassword({ pwd, newPwd }: ChangePasswordDto, user: User): Promise<ChangePasswordResponse> {
-    if (user.pwdHash != hashPwd(pwd, user.salz)) {
+    const isValidPassword = await argon2.verify(user.pwdHash, pwd);
+    if (isValidPassword) {
       throw new BadRequestException("Incorrect credentials.");
     }
-    user.pwdHash = hashPwd(newPwd, user.salz);
+    user.pwdHash = await argon2.hash(newPwd);
     await user.save();
     return {
       message: "Password has changed successfully!",
@@ -58,7 +58,7 @@ export class UserService {
     }
 
     const password = randomPassword();
-    user.pwdHash = hashPwd(password, user.salz);
+    user.pwdHash = await argon2.hash(password);
     await user.save();
 
     await this.mailService.sendMail(recover.email, "recover password", recoverPasswordEmailTemplate(password));
