@@ -35,7 +35,6 @@ export class RecipeService {
         user: { id: userId },
       },
     });
-    console.log(recipe);
     if (recipe) throw new BadRequestException("The given name is already taken.");
     return true;
   }

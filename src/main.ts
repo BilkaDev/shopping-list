@@ -1,5 +1,4 @@
 import { NestFactory } from "@nestjs/core";
-import * as dotenv from "dotenv";
 
 import { AppModule } from "./app.module";
 import { ValidationPipe } from "@nestjs/common";
@@ -8,12 +7,23 @@ import * as cookieParser from "cookie-parser";
 import { ApiTransformInterceptor } from "./interceptors/api-transform.interceptors";
 import { CONFIG } from "./config/client-config";
 
-dotenv.config();
+const checkEnvironment = () => {
+  const errorsMessages: string[] = [];
+  if (!process.env.DB_TYPE) errorsMessages.push("environment variable name=DB_TYPE not specified");
+  if (!process.env.DB_HOST) errorsMessages.push("environment variable name=DB_HOST not specified");
+  if (!process.env.DB_USERNAME) errorsMessages.push("environment variable name=DB_USERNAME not specified");
+  if (!process.env.DB_PASSWORD) errorsMessages.push("environment variable name=DB_PASSWORD not specified");
+  if (!process.env.DB_DATABASE) errorsMessages.push("environment variable name=DB_DATABASE not specified");
+
+  if (errorsMessages.length > 0) {
+    throw new Error(errorsMessages.join("\n"));
+  }
+};
+checkEnvironment();
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix("api");
-
   app.enableCors({
     origin: CONFIG.corsOrigin,
     credentials: true,
