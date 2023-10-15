@@ -16,8 +16,8 @@ export class AuthService {
   } {
     const payload: JwtPayload = { id: currentTokenId };
     const expiresIn = 60 * 60 * 24;
-    const accessToken = sign(payload, process.env.JWT_KEY, { expiresIn });
 
+    const accessToken = sign(payload, process.env.JWT_KEY, { expiresIn });
     return {
       accessToken,
       expiresIn,
@@ -147,6 +147,7 @@ export class AuthService {
           email: "test@example.com",
         },
       });
+
       const token = this.createToken(await this.generateToken(user));
       return res
         .cookie("jwt", token.accessToken, {
