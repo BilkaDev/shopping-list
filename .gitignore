@@ -4,7 +4,6 @@
 
 
 #config files
-mailerconfig.ts
 /.env
 
 # Logs
