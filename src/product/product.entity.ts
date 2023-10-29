@@ -9,7 +9,7 @@ export class Product extends BaseEntity {
   id: string;
 
   @Column({
-    length: 50,
+    length: 100,
     nullable: false,
   })
   name: string;

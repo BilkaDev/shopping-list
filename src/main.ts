@@ -19,6 +19,11 @@ const checkEnvironment = () => {
   if (!process.env.FE_DOMAIN) errorsMessages.push("environment variable name=FE_DOMAIN not specified");
   if (!process.env.FE_SSL) errorsMessages.push("environment variable name=FE_SSL not specified");
   if (!process.env.FE_CORS_ORIGIN) errorsMessages.push("environment variable name=FE_CORS_ORIGIN not specified");
+  /** ENV FOR CONNECT WITH MAIL*/
+  if (!process.env.MAIL_HOST) errorsMessages.push("environment variable name=MAIL_HOST not specified");
+  if (!process.env.MAIL_PORT) errorsMessages.push("environment variable name=MAIL_PORT not specified");
+  if (!process.env.MAIL_USER) errorsMessages.push("environment variable name=MAIL_USER not specified");
+  if (!process.env.MAIL_PWD) errorsMessages.push("environment variable name=MAIL_PWD not specified");
   if (errorsMessages.length > 0) {
     throw new Error(errorsMessages.join("\n"));
   }

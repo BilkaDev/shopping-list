@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable, ConflictException } from "@nestjs/common";
 import * as argon2 from "argon2";
 import { RegisterDto } from "./dto/register.dto";
 import { User } from "./user.entity";
@@ -25,10 +25,10 @@ export class UserService {
       user.email = newUser.email;
       user.pwdHash = await argon2.hash(newUser.pwd);
       await user.save();
-      await this.mailService.sendMail(newUser.email, "recover password", singUpEmailTemplate());
+      await this.mailService.sendMail(newUser.email, "User registered", singUpEmailTemplate());
       return { id: user.id, email: user.email };
     } else {
-      throw new NotFoundException("email is already in use");
+      throw new ConflictException("email is already in use");
     }
   }
 

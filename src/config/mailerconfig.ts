@@ -1,14 +1,14 @@
-import {HandlebarsAdapter} from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
+import { HandlebarsAdapter } from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
 
 export = {
   transport: {
-    host: "localhost",
-    port: 2500,
+    host: process.env.MAIL_HOST,
+    port: parseInt(process.env.MAIL_PORT),
     ignoreTLS: true,
     secure: false,
     auth: {
-      user: "user",
-      pass: "pwd",
+      user: process.env.MAIL_USER,
+      pass: process.env.MAIL_PWD,
     },
   },
   defaults: {
